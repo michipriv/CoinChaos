@@ -1,65 +1,53 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Dec 16 22:51:11 2023
 
-@author: administrator
-"""
-
-
-
-
-
-import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from classes.TechnicalIndicators import TechnicalIndicators
+from classes.TechnicalIndicators import TechnicalIndicators  # Stellen Sie sicher, dass der Importpfad korrekt ist
 
 class CandlestickChart:
-    def plot(self, data, symbol, interval):
-        # Umwandlung der Daten in ein pandas DataFrame
-        df = pd.DataFrame(data)
-        df['Date'] = pd.to_datetime(df['time'], unit='ms')
-        df.set_index('Date', inplace=True)
-        df = df[['open', 'high', 'low', 'close', 'volume']].astype(float)
+    def __init__(self, technical_indicators):
+        self.technical_indicators = technical_indicators
 
-        # Berechnung der Vector Candles und EMAs
-        technical_indicators = TechnicalIndicators(df)
-        df = technical_indicators.calc_vector_candles()
-        ema_50 = technical_indicators.calculate_ema(50)
-        ema_100 = technical_indicators.calculate_ema(100)
+    def plot(self, symbol, interval):
+        # Stellen Sie sicher, dass die technischen Indikatoren geladen wurden
+        self.technical_indicators.load_data()
 
-        # Zeichnen des Diagramms
+        # Berechnung der Vektor-Kerzen und EMAs
+        df = self.technical_indicators.calc_vector_candles()
+        ema_50 = self.technical_indicators.calculate_ema(50)
+        ema_100 = self.technical_indicators.calculate_ema(100)
+
+        # Vorbereitung des DataFrames für das Plotting
+        df.reset_index(inplace=True)
+        df['Date'] = pd.to_datetime(df['time'], unit='ms')  # Umwandeln von Unix-Zeitstempel in lesbare Datum
+        df['Date'] = df['Date'].apply(mdates.date2num)
+
+        # Erstellung des Diagramms
         self.plot_vector_candles(df, ema_50, ema_100, symbol, interval)
 
     def plot_vector_candles(self, df, ema_50, ema_100, symbol, interval):
-        # Konvertieren der Zeit in matplotlib-Format
-        df.reset_index(inplace=True)
-        df['Date'] = df['Date'].apply(mdates.date2num)
-    
         fig, ax = plt.subplots()
-    
-        # Zeichnen der Vector Candles
+
+        # Zeichnen der Vektor-Kerzen
         for idx, row in df.iterrows():
             color = 'green' if row['close'] > row['open'] else 'red' if row['color'] != 'gray' else 'gray'
             ax.plot([row['Date'], row['Date']], [row['low'], row['high']], color='black')
             ax.plot([row['Date'], row['Date']], [row['open'], row['close']], color=color, linewidth=6)
-    
-        # Hinzufügen der EMAs - Farben geändert
+
+        # Hinzufügen der EMAs
         ax.plot(df['Date'], ema_50, color='blue', label='EMA 50')
-        ax.plot(df['Date'], ema_100, color='green', label='EMA 100')  # Farbe zu Grün geändert
-    
-        # Formatierung und Hinzufügen von Legenden
+        ax.plot(df['Date'], ema_100, color='green', label='EMA 100')
+
+        # Formatierung und Legenden
         ax.xaxis_date()
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
         plt.xticks(rotation=45)
         plt.title(f'{symbol} Vector Candles Chart ({interval})')
         plt.legend()
-        
-        # Hinzufügen von zusätzlichen Informationen
+
         plt.figtext(0.1, 0.9, f'Symbol: {symbol}', fontsize=9, ha='left')
         plt.figtext(0.1, 0.88, f'Timeframe: {interval}', fontsize=9, ha='left')
         plt.figtext(0.1, 0.86, f'Data Points: {len(df)}', fontsize=9, ha='left')
-    
-        plt.show()
 
+        plt.show()

@@ -8,6 +8,13 @@ Copy code
 
 Verwenden Sie die folgenden Befehle, um die benötigten Module zu installieren:
 """
+ChatGPT Prompt
+
+Verhalte ich wie ein Crypto Trader und Python Entwickler.
+Verwende Klassen zum aufteilen der funktionen und zur übersichtlichkeit
+Verwende Sphinx zur dokumentation in den Klassen und funktionen
+
+Antworte mit BINGO wenn es klar für dich ist.
 
 pip install python-binance
 pip install matplotlib mplfinance
@@ -40,5 +47,12 @@ Aktualisieren Sie Ihre Dokumentation, indem Sie den folgenden Befehl ausführen 
 
 sphinx-build -b html docs/source/ docs/build/
 Das erstellt die HTML-Dokumentation in "docs/build/html". Sie können nun Ihre Dokumentation anzeigen, indem Sie die HTML-Dateien in einem Webbrowser öffnen.
+
+zu Github
+git add .
+git commit -m "Update"
+git push
+
+von Github
 
 """

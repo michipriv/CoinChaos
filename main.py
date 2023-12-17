@@ -21,6 +21,8 @@ Sie verwendet die von BinanceClient abgerufenen Daten, um Diagramme zu erstellen
 from classes.ApiConfigReader import ApiConfigReader
 from classes.BinanceClient import BinanceClient
 from classes.CandlestickChart import CandlestickChart
+from classes.TechnicalIndicators import TechnicalIndicators
+
 
 def main():
     """
@@ -39,13 +41,23 @@ def main():
     config_reader = ApiConfigReader(config_path)
     api_keys = config_reader.read_config()
 
-    client = BinanceClient(api_keys.get('api_key'), api_keys.get('secret_key'))
+    
     symbol = 'BTCUSDT'
     interval = '1h'
-    days = 5
-    data = client.get_crypto_data(symbol, days, interval)
-    chart = CandlestickChart()
-    chart.plot(data, symbol, interval)
+    days = 1
+    
+    binance_client = BinanceClient(api_keys.get('api_key'), api_keys.get('secret_key'))
+
+    
+    # Daten abrufen und aufbereiten
+    binance_client.initialize_data()
+    binance_client.get_data_binance(symbol, days, interval)  #get Data from Binance
+    binance_client.print_data() # testprint Panda frame
+    
+    technical_indicators = TechnicalIndicators(binance_client)
+    
+    chart = CandlestickChart(technical_indicators)
+    chart.plot( symbol, interval)
     
 if __name__ == "__main__":
     main()

@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Dec 16 22:33:01 2023
 
-@author: administrator
-"""
 
 class ApiConfigReader:
     def __init__(self, filepath):

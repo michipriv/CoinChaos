@@ -1,59 +1,72 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Dec 16 22:59:33 2023
-
-@author: administrator
-"""
 
 import pandas as pd
 
+
 class TechnicalIndicators:
-    def __init__(self, df):
-        self.df = df
+    """
+    Diese Klasse berechnet technische Indikatoren und Vektor-Kerzen für Handelsdaten.
+
+    Attributes:
+        binance_client: Eine Instanz des BinanceClient, von der die Handelsdaten abgerufen werden.
+        data: DataFrame, der die Handelsdaten enthält.
+    """
+
+    def __init__(self, binance_client):
+        """
+        Initialisiert die TechnicalIndicators-Klasse mit einem BinanceClient-Objekt.
+
+        Args:
+            binance_client: Eine Instanz des BinanceClient.
+        """
+  
+        self.binance_client = binance_client
+        self.data = None  # Initialisieren als None
+        self.load_data()
+
+    def load_data(self):
+        """
+        Lädt die Handelsdaten vom BinanceClient.
+        """
+        self.data = self.binance_client.get_data()       
+        
 
     def calculate_ema(self, period):
-        ema = self.df['close'].ewm(span=period, adjust=False).mean()
+        """
+        Berechnet den exponentiellen gleitenden Durchschnitt (EMA) für den angegebenen Zeitraum.
+
+        Args:
+            period (int): Die Periode, über die der EMA berechnet wird.
+
+        Returns:
+            pandas.Series: Eine Serie, die den EMA-Werte enthält.
+        """
+     
+        
+        ema = self.data['close'].ewm(span=period, adjust=False).mean()
         return ema
-    
-   
 
     def calc_vector_candles(self):
-        # Berechnung des durchschnittlichen Volumens und des Volumen-Spreads
-        average_volume = self.df['volume'].rolling(window=10).mean()
-        volume_spread = self.df['volume'] * (self.df['high'] - self.df['low'])
+        """
+        Berechnet die Farben der Vektor-Kerzen basierend auf Handelsvolumen und Preisbewegungen.
+
+        Returns:
+            pandas.DataFrame: Der aktualisierte DataFrame mit einer neuen Spalte 'color', die die Farben der Kerzen enthält.
+        """
+        average_volume = self.data['volume'].rolling(window=10).mean()
+        volume_spread = self.data['volume'] * (self.data['high'] - self.data['low'])
         highest_volume_spread = volume_spread.rolling(window=10).max()
-    
-        # Vektorisierte Bedingungen für die Farbzuweisung
-        climax_condition = (self.df['volume'] >= 2 * average_volume.shift(1)) | (volume_spread >= highest_volume_spread.shift(1))
-        rising_volume_condition = self.df['volume'] >= 1.5 * average_volume.shift(1)
-    
-        # Zuweisung der Farben
-        self.df['color'] = 'gray'  # Standardfarbe
-        self.df.loc[climax_condition & (self.df['close'] > self.df['open']), 'color'] = 'green'
-        self.df.loc[climax_condition & (self.df['close'] <= self.df['open']), 'color'] = 'red'
-        self.df.loc[rising_volume_condition & ~climax_condition & (self.df['close'] > self.df['open']), 'color'] = 'blue'
-        self.df.loc[rising_volume_condition & ~climax_condition & (self.df['close'] <= self.df['open']), 'color'] = 'violet'
-    
-        return self.df
 
+        climax_condition = (self.data['volume'] >= 2 * average_volume.shift(1)) | (volume_spread >= highest_volume_spread.shift(1))
+        rising_volume_condition = self.data['volume'] >= 1.5 * average_volume.shift(1)
 
-    #test vector candle, zählt die roten,grüne,pink nd blauen candle
-    def calc_vector_candles_test(self):
-        average_volume = self.df['volume'].rolling(window=10).mean()
-        volume_spread = self.df['volume'] * (self.df['high'] - self.df['low'])
-        highest_volume_spread = volume_spread.rolling(window=10).max()
-    
-        for index, row in self.df.iterrows():
-            if row['volume'] >= 2 * average_volume[index] or volume_spread[index] >= highest_volume_spread[index]:
-                self.df.at[index, 'color'] = 'green' if row['close'] > row['open'] else 'red'
-            elif row['volume'] >= 1.5 * average_volume[index]:
-                self.df.at[index, 'color'] = 'blue' if row['close'] > row['open'] else 'pink'
-            else:
-                self.df.at[index, 'color'] = 'gray'
-    
-        # Debugging: Ausgabe der Anzahl der Kerzen jeder Farbe
-        print(self.df['color'].value_counts())
-    
-        return self.df
+        self.data['color'] = 'gray'
+        self.data.loc[climax_condition & (self.data['close'] > self.data['open']), 'color'] = 'green'
+        self.data.loc[climax_condition & (self.data['close'] <= self.data['open']), 'color'] = 'red'
+        self.data.loc[rising_volume_condition & ~climax_condition & (self.data['close'] > self.data['open']), 'color'] = 'blue'
+        self.data.loc[rising_volume_condition & ~climax_condition & (self.data['close'] <= self.data['open']), 'color'] = 'violet'
 
+        return self.data
+
+    
