@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Dec 16 22:49:57 2023
+
+@author: administrator
+"""
+
+"""
+
+#Module zu code
+
+pip install python-binance
+pip install matplotlib mplfinance
+pip install sphinx
+
+
+Sphinx Dokumentation
+docs/source/conf.py
+import os
+import sys
+sys.path.insert(0, os.path.abspath('/home/administrator/crypto'))
+extensions = ['sphinx.ext.autodoc']
+
+
+
+im Hauptverzeichnis
+mkdir docs
+cd docs
+
+initalisierung
+sphinx-quickstart
+
+rst files module erstellen lassen
+sphinx-apidoc -o docs/source/ /home/administrator/crypto
+
+update der dokumentation
+sphinx-build -b html docs/source/ build/html
+
+
+"""

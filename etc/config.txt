@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Dec 16 22:37:46 2023
+
+@author: administrator
+"""
+
+#binance
+api_key=ki3sbGXIGpLJ8hKjMpsKKesLrf6e59RP6cwx9oPeRTbf6BDoudqR53U5xD3ndivW
+secret_key=MZuQDr9IvyCDTATAyKcSwm73q1jVJ30NrJ7Y9x2dvwrlH8Tpcx4WiCVeZHqXyPrs
