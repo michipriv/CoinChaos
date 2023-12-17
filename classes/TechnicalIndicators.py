@@ -33,19 +33,9 @@ class TechnicalIndicators:
         
 
     def calculate_ema(self, period):
-        """
-        Berechnet den exponentiellen gleitenden Durchschnitt (EMA) für den angegebenen Zeitraum.
-
-        Args:
-            period (int): Die Periode, über die der EMA berechnet wird.
-
-        Returns:
-            pandas.Series: Eine Serie, die den EMA-Werte enthält.
-        """
-     
         
-        ema = self.data['close'].ewm(span=period, adjust=False).mean()
-        return ema
+        self.binance_client.data[f'ema_{period}'] = self.binance_client.data['close_price'].ewm(span=period, adjust=False).mean()
+
 
     def calc_vector_candles(self):
         """
@@ -55,17 +45,17 @@ class TechnicalIndicators:
             pandas.DataFrame: Der aktualisierte DataFrame mit einer neuen Spalte 'color', die die Farben der Kerzen enthält.
         """
         average_volume = self.data['volume'].rolling(window=10).mean()
-        volume_spread = self.data['volume'] * (self.data['high'] - self.data['low'])
+        volume_spread = self.data['volume'] * (self.data['high_price'] - self.data['low_price'])
         highest_volume_spread = volume_spread.rolling(window=10).max()
 
         climax_condition = (self.data['volume'] >= 2 * average_volume.shift(1)) | (volume_spread >= highest_volume_spread.shift(1))
         rising_volume_condition = self.data['volume'] >= 1.5 * average_volume.shift(1)
 
         self.data['color'] = 'gray'
-        self.data.loc[climax_condition & (self.data['close'] > self.data['open']), 'color'] = 'green'
-        self.data.loc[climax_condition & (self.data['close'] <= self.data['open']), 'color'] = 'red'
-        self.data.loc[rising_volume_condition & ~climax_condition & (self.data['close'] > self.data['open']), 'color'] = 'blue'
-        self.data.loc[rising_volume_condition & ~climax_condition & (self.data['close'] <= self.data['open']), 'color'] = 'violet'
+        self.data.loc[climax_condition & (self.data['close_price'] > self.data['open_price']), 'color'] = 'green'
+        self.data.loc[climax_condition & (self.data['close_price'] <= self.data['open_price']), 'color'] = 'red'
+        self.data.loc[rising_volume_condition & ~climax_condition & (self.data['close_price'] > self.data['open_price']), 'color'] = 'blue'
+        self.data.loc[rising_volume_condition & ~climax_condition & (self.data['close_price'] <= self.data['open_price']), 'color'] = 'violet'
 
         return self.data
 

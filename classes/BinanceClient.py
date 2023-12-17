@@ -34,6 +34,7 @@ class BinanceClient:
         """
         self.client = Client(api_key, api_secret)
         self.data = pd.DataFrame()
+        
 
     def initialize_data(self):
         """
@@ -48,12 +49,15 @@ class BinanceClient:
               
               
         """
-        columns = ['time', 'open_price', 'high_price', 'low_price', 'close_price', 'volume']
+        columns = ['time', 'open_price', 'high_price', 'low_price', 'close_price', 
+                      'volume','ema_50','ema_100','vector_candle']
         self.data = pd.DataFrame(columns=columns)
 
+    
 
 
-    def get_data_binance(self, symbol, days_ago, interval='1d'):
+    def get_data_binance(self, symbol, interval, days_ago):
+        
         """
         Ruft Handelsdaten für ein bestimmtes Symbol ab und speichert sie im DataFrame.
     
@@ -65,12 +69,15 @@ class BinanceClient:
         Returns:
             None: Die Methode aktualisiert den internen DataFrame mit den abgerufenen Daten.
         """
+        # Umwandlung des Interval-Strings in timedelta
         end_time = datetime.now()
+        days_ago=1
         start_time = end_time - timedelta(days=days_ago)
         start_str = start_time.strftime('%d %b, %Y')
         end_str = end_time.strftime('%d %b, %Y')
-    
+   
         candles = self.client.get_historical_klines(symbol, interval, start_str, end_str)
+   
     
         for candle in candles:
             time = candle[0]
@@ -110,20 +117,39 @@ class BinanceClient:
         new_row = kwargs
         new_row_df = pd.DataFrame([new_row])
         self.data = pd.concat([self.data, new_row_df], ignore_index=True)
-
-
+        
+ 
     def print_data(self):
         """
         Zeigt alle Daten des internen DataFrame an.
 
         Diese Methode gibt den aktuellen Inhalt des DataFrame `self.data` aus.
         """
+        pd.set_option('display.max_rows', None)  # Zeige alle Zeilen
+        pd.set_option('display.max_columns', None)  # Zeige alle Spalten
+  
         
         if self.data.empty:
             print("Der DataFrame ist leer.")
         else:
+            print("init data")
             print(self.data)
+            
+            #achtung es werdennciht immer alle werte in einer reihe angezeigt-> selektive ausgabe verwenden
+            #selektierte daten ausgeben
+            #elected_columns = self.data.loc[:, ['open_price', 'high_price', 'ema_50']]
+            #print(selected_columns)
+   
+    def add_column(self, column_name, values):
+        # Fügen Sie eine neue Spalte hinzu
+        self.data[column_name] = values
+        
 
 
     def get_data(self):
+        """
+        Gibt den aktuellen DataFrame mit Handelsdaten zurück.
+        """
         return self.data
+
+    
