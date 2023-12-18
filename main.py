@@ -42,8 +42,8 @@ def main():
     api_keys = config_reader.read_config()
 
     symbol = 'BTCUSDT'
-    interval = '15m'  # String für INterval 1m,3m,5m,1D,
-    days_ago = 3 # Integer für abzurufende Tage
+    interval = '4h'  # String für INterval 1m,3m,5m,1d, 1w, 1M
+    days_ago = 14 # Integer für abzurufende Tage
 
     
     binance_client = BinanceClient(api_keys.get('api_key'), api_keys.get('secret_key'))
@@ -51,15 +51,19 @@ def main():
     # Daten abrufen und aufbereiten
     binance_client.initialize_data()
     binance_client.get_data_binance(symbol, interval,  days_ago, )  # korrigierte Reihenfolge der Parameter
-    binance_client.print_data()
-    
+  
+    #technische INdikatoren berechnen für die abgerufenen Daten und im Panda Framework abspeichern    
     
     technical_indicators = TechnicalIndicators(binance_client)
     technical_indicators.calculate_ema(50)
     technical_indicators.calculate_ema(100)
+    technical_indicators.calc_vector_candles()
+    technical_indicators.calculate_candle_color()
+    
     binance_client.print_data()
    
     
+   #Anzeige des Chart
     chart = CandlestickChart(binance_client)
     chart.plot( symbol, interval, days_ago)
     

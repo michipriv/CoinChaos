@@ -7,5 +7,5 @@ Created on Sat Dec 16 22:37:46 2023
 """
 
 #binance
-api_key=ki3sbGXIGpLJ8hKjMpsKKesLrf6e59RP6cwx9oPeRTbf6BDoudqR53U5xD3ndivW
-secret_key=MZuQDr9IvyCDTATAyKcSwm73q1jVJ30NrJ7Y9x2dvwrlH8Tpcx4WiCVeZHqXyPrs
+api_key=MZuQDr9IvyCDTATAyKcSwm73q1jVJ30NrJ7Y9x2dvwrlH8Tpcx4WiCVeZHqXyPrs
+secret_key=WxCm0o0rZ0H6T9NkEiEjEpQPH51HiSQDdyU3Bkhob0xRmK9wAPQDxPgx0eqOVFs2

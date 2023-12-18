@@ -50,7 +50,7 @@ class BinanceClient:
               
         """
         columns = ['time', 'open_price', 'high_price', 'low_price', 'close_price', 
-                      'volume','ema_50','ema_100','vector_candle']
+                      'volume','ema_50','ema_100','vector_color']
         self.data = pd.DataFrame(columns=columns)
 
     
@@ -71,7 +71,7 @@ class BinanceClient:
         """
         # Umwandlung des Interval-Strings in timedelta
         end_time = datetime.now()
-        days_ago=1
+       
         start_time = end_time - timedelta(days=days_ago)
         start_str = start_time.strftime('%d %b, %Y')
         end_str = end_time.strftime('%d %b, %Y')
