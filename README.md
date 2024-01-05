@@ -19,6 +19,8 @@ Antworte mit BINGO wenn es klar für dich ist.
 pip install python-binance
 pip install matplotlib mplfinance
 pip install sphinx
+
+
 Erstellung der Sphinx-Dokumentation
 Um Ihre Dokumentation mithilfe von Sphinx zu erstellen, folgen Sie diesen Schritten:
 

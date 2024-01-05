@@ -43,7 +43,7 @@ def main():
 
     symbol = 'BTCUSDT'
     interval = '4h'  # String für INterval 1m,3m,5m,1d, 1w, 1M
-    days_ago = 14 # Integer für abzurufende Tage
+    days_ago = 8 # Integer für abzurufende Tage
 
     
     binance_client = BinanceClient(api_keys.get('api_key'), api_keys.get('secret_key'))
