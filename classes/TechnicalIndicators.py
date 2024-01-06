@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
+import numpy as np
 
 
 class TechnicalIndicators:
@@ -79,3 +80,65 @@ class TechnicalIndicators:
         """
         self.data['Kerze'] = self.data.apply(
             lambda row: 'Grün' if row['close_price'] > row['open_price'] else 'Rot', axis=1)
+        
+     
+    def lower_low(self):
+        
+        """
+        Identifiziert das tiefste Tief innerhalb eines Musters von zwei roten und zwei grünen Kerzen.
+        Fügt dem DataFrame Spalten 'lower_low', 'muster_start' und 'muster_ende' hinzu, 
+        die 'LL' für die Kerze mit dem tiefsten Tief, 'AA' für den Anfang und 'EE' für das Ende des Musters markieren.
+        """
+        df = self.data
+        df['lower_low'] = 'NA'  # Initialisiere alle Werte mit 'NA'
+        df['muster_start'] = 'NA'  # Für den Anfang des Musters
+        df['muster_ende'] = 'NA'  # Für das Ende des Musters
+    
+        for i in range(2, len(df) - 2):
+            if df['Kerze'][i - 2] == 'Rot' and df['Kerze'][i - 1] == 'Rot':
+                # Markiere den Anfang des Musters
+                df.at[i - 2, 'muster_start'] = 'AA'
+    
+                # Suche nach zwei aufeinanderfolgenden grünen Kerzen nach den roten Kerzen
+                for j in range(i, len(df) - 1):
+                    if df['Kerze'][j] == 'Grün' and df['Kerze'][j + 1] == 'Grün':
+                        # Markiere das Ende des Musters
+                        df.at[j + 1, 'muster_ende'] = 'EE'
+    
+                        # Finde das tiefste Tief im Muster
+                        start = i - 2
+                        ende = j + 1
+                        lowest_low_index = df['low_price'][start:ende + 1].idxmin()
+                        df.at[lowest_low_index, 'lower_low'] = 'LL'
+                        break
+    
+        return df
+    
+    def higher_high(self):
+        """
+        Identifiziert das höchste Hoch innerhalb eines Musters von zwei grünen und zwei roten Kerzen.
+        Fügt dem DataFrame eine Spalte 'higher_high' hinzu,
+        die 'HH' für die Kerze mit dem höchsten Hoch, 'AA' für den Anfang und 'EE' für das Ende des Musters markiert.
+        """
+        df = self.data
+        df['higher_high'] = 'NA'  # Initialisiere alle Werte mit 'NA'
+    
+        for i in range(2, len(df) - 2):
+            if df['Kerze'][i - 2] == 'Grün' and df['Kerze'][i - 1] == 'Grün':
+                # Markiere den Anfang des Musters
+                df.at[i - 2, 'higher_high'] = 'AA'
+    
+                # Suche nach zwei aufeinanderfolgenden roten Kerzen nach den grünen Kerzen
+                for j in range(i, len(df) - 1):
+                    if df['Kerze'][j] == 'Rot' and df['Kerze'][j + 1] == 'Rot':
+                        # Markiere das Ende des Musters
+                        df.at[j + 1, 'higher_high'] = 'EE'
+    
+                        # Finde das höchste Hoch im Muster
+                        start = i - 2
+                        ende = j + 1
+                        highest_high_index = df['high_price'][start:ende + 1].idxmax()
+                        df.at[highest_high_index, 'higher_high'] = 'HH'
+                        break
+    
+        return df

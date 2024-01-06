@@ -5,6 +5,8 @@
 import pandas as pd
 from binance.client import Client
 from datetime import datetime, timedelta
+from pytz import timezone
+import pytz
 
 class BinanceClient:
     """
@@ -24,7 +26,8 @@ class BinanceClient:
         testAbruf(symbol, days_ago, interval='1d'): Testet das Abrufen von Daten und zeigt eine Vorschau an.
     """
 
-    def __init__(self, api_key, api_secret):
+    def __init__(self, api_key, api_secret, time_zone='UTC'):
+         
         """
         Initialisiert die BinanceClient-Klasse mit API-Schlüsseln.
 
@@ -34,6 +37,7 @@ class BinanceClient:
         """
         self.client = Client(api_key, api_secret)
         self.data = pd.DataFrame()
+        self.time_zone = timezone(time_zone)
         
 
     def initialize_data(self):
@@ -46,41 +50,75 @@ class BinanceClient:
         low_price (float): Tiefstpreis.
         close_price (float): Schlusspreis.
         volume (int): Volumen.
+        
               
               
         """
         columns = ['time', 'open_price', 'high_price', 'low_price', 'close_price', 
-                      'volume','ema_50','ema_100','vector_color']
+                      'volume','vector_color', 'lowest_low']
         self.data = pd.DataFrame(columns=columns)
 
     
 
 
-    def get_data_binance(self, symbol, interval, days_ago):
+    def get_data_binance(self, symbol, interval, limit):
         
+        """       
+        .. py:method:: BinanceClient.get_data_binance(symbol, interval, days_ago)
+
+        Ruft Handelsdaten für ein bestimmtes Kryptowährungssymbol von der Binance API ab und speichert sie in einem DataFrame. Diese Methode verwendet die aktuelle Serverzeit von Binance, um sicherzustellen, dass die Zeitberechnung genau ist. Die abgerufenen Daten enthalten verschiedene Details zu jedem Handelsintervall, wie Öffnungs-, Höchst-, Tiefst- und Schlusspreise sowie das gehandelte Volumen.
+
+        :param str symbol: Das Handelssymbol für die Abfrage, beispielsweise 'BTCUSDT'.
+        :param str interval: Das Zeitintervall für die Daten. Die unterstützten Intervalle sind beispielsweise '1m' (eine Minute), '1h' (eine Stunde), '1d' (ein Tag). Standardmäßig ist das Intervall auf '1d' gesetzt.
+        :param int limit: Die Anzahl der Kerzen die abgerufen werden sollen. 
+
+        Die Methode beginnt mit der Abfrage der aktuellen Serverzeit von Binance und berechnet den Start- und Endzeitpunkt für die Datensammlung. Anschließend werden die historischen Kerzendaten ('klines') für das angegebene Symbol und Intervall von der Binance API abgerufen. Jede Kerze wird in ein Datumsformat (im UTC-Standard) umgewandelt und zusammen mit anderen relevanten Handelsdaten in den DataFrame eingefügt.
+
+        :return: Diese Methode gibt nichts zurück, sondern aktualisiert den internen DataFrame der Klasse mit den abgerufenen Handelsdaten.
+        :rtype: None
+
+        Beispiel::
+
+        # Erstellen einer Instanz der BinanceClient-Klasse
+        client = BinanceClient(api_key, api_secret)
+
+        # Abrufen von Handelsdaten für BTCUSDT für die letzten 10 Balken im 1h Format
+        client.get_data_binance('BTCUSDT', '1h', 10)
+
         """
-        Ruft Handelsdaten für ein bestimmtes Symbol ab und speichert sie im DataFrame.
+        # Abrufen der aktuellen Serverzeit von Binance
+        server_time = self.client.get_server_time()
+        server_dt = datetime.fromtimestamp(server_time['serverTime'] / 1000, pytz.utc)
     
-        Args:
-            symbol (str): Das Handelssymbol, z.B. 'BTCUSDT'.
-            days_ago (int): Anzahl der Tage in der Vergangenheit für den Beginn der Datenabfrage.
-            interval (str, optional): Das Zeitintervall für die Daten. Standardmäßig '1d' (1 Tag).
+        # Berechnung des Startzeitpunkts basierend auf 'limit' und 'interval'
+        if interval.endswith('m'):
+            delta = timedelta(minutes=int(interval[:-1]) * limit)
+        elif interval.endswith('h'):
+            delta = timedelta(hours=int(interval[:-1]) * limit)
+        elif interval.endswith('d'):
+            delta = timedelta(days=int(interval[:-1]) * limit)
+        else:
+            raise ValueError("Ungültiges Intervallformat")
     
-        Returns:
-            None: Die Methode aktualisiert den internen DataFrame mit den abgerufenen Daten.
-        """
-        # Umwandlung des Interval-Strings in timedelta
-        end_time = datetime.now()
-       
-        start_time = end_time - timedelta(days=days_ago)
-        start_str = start_time.strftime('%d %b, %Y')
-        end_str = end_time.strftime('%d %b, %Y')
-   
-        candles = self.client.get_historical_klines(symbol, interval, start_str, end_str)
-   
+        start_time = server_dt - delta
     
+        # Formatierung der Zeitstempel für die API-Anfrage
+        start_str = start_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+        end_str = server_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+    
+        # Abrufen der historischen Kurse mit Limit
+        candles = self.client.get_historical_klines(symbol, interval, start_str, end_str, limit=limit)
+
+
         for candle in candles:
+            
             time = candle[0]
+            # Zeitzone konvertieren
+            dt = datetime.fromtimestamp(time / 1000, pytz.utc).astimezone(self.time_zone)
+            
+            # Formatieren des Zeitstempels im ISO 8601-Format
+            formatted_time = dt.strftime('%Y-%m-%dT%H:%M:%S')
+        
             open_price = float(candle[1])
             high_price = float(candle[2])
             low_price = float(candle[3])
@@ -90,6 +128,7 @@ class BinanceClient:
             # Verwende die append_data-Methode, um die Daten zum DataFrame hinzuzufügen
             self.append_data(
                 time=time,
+                time1=formatted_time,
                 open_price=open_price,
                 high_price=high_price,
                 low_price=low_price,
