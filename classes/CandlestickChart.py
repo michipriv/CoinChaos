@@ -58,7 +58,7 @@ class CandlestickChart:
         ax.plot(df['Date'], df['ema_5'], label='EMA-5', color='yellow', linewidth=2)
         ax.plot(df['Date'], df['ema_13'], label='EMA-13', color='orange', linewidth=2)
         ax.plot(df['Date'], df['ema_50'], label='EMA-50', color='blue', linewidth=2)
-        ax.plot(df['Date'], df['ema_50'], label='EMA-100', color='green', linewidth=2)
+        ax.plot(df['Date'], df['ema_100'], label='EMA-100', color='green', linewidth=2)
         ax.plot(df['Date'], df['ema_200'], label='EMA-200', color='white', linewidth=2)
         ax.plot(df['Date'], df['ema_800'], label='EMA-800', color='violet', linewidth=2)
         
@@ -77,6 +77,7 @@ class CandlestickChart:
             plt.legend()
 
 
+    ################################################
 
 
     def plot_candlestick(self, df, symbol, interval):
@@ -89,21 +90,19 @@ class CandlestickChart:
         self.draw_candles(ax, df)       #Kerzen zeichnen
         self.draw_ema_lines(ax, df)     # emas zeichnen
         self.format_chart(ax, symbol, interval)  # Chart formatieren
-        self.draw_lowest_low(ax,df)
-        self.draw_highest_high(ax,df)
+        #self.draw_lowest_low(ax,df)
+        #self.draw_highest_high(ax,df)
+        self.draw_w_pattern(ax,df)
         
         plt.show()      # Finale aufruf des Chrts zur ANzeige
         
+    ################################################
+
     def draw_lowest_low(self, ax, df):
-        """
-        Zeichnet horizontale Linien für 'LL', 'AA' und 'EE' Markierungen über maximal 10 Balken.
+        length_candle = 5   #länge der Lnie in Kerzen
         
-        Args:
-            ax: Das Achsenobjekt von Matplotlib, auf dem der Chart gezeichnet wird.
-            df: DataFrame, der die Handelsdaten enthält.
-        """
         for idx, row in df.iterrows():
-            end_idx = min(idx + 10, len(df))
+            end_idx = min(idx + length_candle, len(df))
     
             # Berechne xmin und xmax für die Linien
             xmin = idx / len(df)
@@ -113,52 +112,24 @@ class CandlestickChart:
             if row['lower_low'] == 'LL':
                 ax.axhline(y=row['low_price'], color='blue', linestyle='--', xmin=xmin, xmax=xmax)
     
-            '''
-            # Zeichne eine Linie für 'AA'
-            if row['muster_start'] == 'AA':
-                ax.axhline(y=row['high_price'], color='green', linestyle='--', xmin=xmin, xmax=xmax)
+                
+    def draw_w_pattern(self, ax, df):
+        length_candle = 1  # Länge der Linie in Anzahl der Kerzen
     
-            # Zeichne eine Linie für 'EE'
-            if row['muster_ende'] == 'EE':
-                ax.axhline(y=row['low_price'], color='red', linestyle='--', xmin=xmin, xmax=xmax)
-
-            '''
-            
-            
-            
-def draw_highest_high(self, ax, df):
-    """
-    Zeichnet horizontale Linien für 'HH' Markierungen über maximal 10 Balken.
-    
-    Args:
-        ax: Das Achsenobjekt von Matplotlib, auf dem der Chart gezeichnet wird.
-        df: DataFrame, der die Handelsdaten enthält.
-    """
-    for idx, row in df.iterrows():
-        end_idx = min(idx + 10, len(df))
-
-        # Berechne xmin und xmax für die Linien
-        xmin = idx / len(df)
-        xmax = end_idx / len(df)
-
-        # Zeichne eine Linie für 'HH'
-        if row['higher_high'] == 'HH':
-            ax.axhline(y=row['high_price'], color='purple', linestyle='--', xmin=xmin, xmax=xmax)
-    def draw_highest_high(self, ax, df):
-        """
-        Zeichnet horizontale Linien für 'HH' Markierungen über maximal 10 Balken.
-        
-        Args:
-        ax: Das Achsenobjekt von Matplotlib, auf dem der Chart gezeichnet wird.
-        df: DataFrame, der die Handelsdaten enthält.
-        """
         for idx, row in df.iterrows():
-            end_idx = min(idx + 10, len(df))
-        
             # Berechne xmin und xmax für die Linien
-            xmin = idx / len(df)
-            xmax = end_idx / len(df)
-        
-            # Zeichne eine Linie für 'HH'
-            if row['higher_high'] == 'HH':
-                ax.axhline(y=row['high_price'], color='purple', linestyle='--', xmin=xmin, xmax=xmax)
+            # Die x-Position jeder Kerze entspricht ihrem Index im DataFrame
+            xmin = (idx - 0.5) / len(df)  # Verschiebe xmin ein wenig nach links von der Kerze
+            xmax = (idx + length_candle - 0.5) / len(df)  # xmax auf die Länge der Linie einstellen
+    
+            # Zeichne eine Linie für Start des Musters = lower_low
+            if row['w_start'] == 'AA':
+                ax.axhline(y=row['low_price'], color='orange', linestyle='--', xmin=xmin, xmax=xmax)
+    
+            # Zeichne eine Linie für Mitte des Musters 
+            if row['w_middle'] == 'MM':
+                ax.axhline(y=row['low_price'], color='yellow', linestyle='--', xmin=xmin, xmax=xmax)
+    
+            # Zeichne eine Linie für 50%-Punkt des Musters 
+            # if row['w_50_percent'] == '50%':
+            #    ax.axhline(y=row['low_price'], color='red', linestyle='--', xmin=xmin, xmax=xmax)
