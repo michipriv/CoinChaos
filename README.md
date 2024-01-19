@@ -1,7 +1,4 @@
-matierung:
 
-markdown
-Copy code
 # Projekt Dokumentation
 
 ## Installation der erforderlichen Module
@@ -56,7 +53,3 @@ git commit -m "Update"
 git push
 
 https://github.com/michipriv/CoinChaos
-
-von Github
-
-"""
