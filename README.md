@@ -17,11 +17,9 @@ pip install python-binance
 pip install matplotlib mplfinance
 pip install sphinx
 
-
-Erstellung der Sphinx-Dokumentation
-Um Ihre Dokumentation mithilfe von Sphinx zu erstellen, folgen Sie diesen Schritten:
-
-Wechseln Sie in Ihr Projektverzeichnis:
+```
+## Sphinx-Dokumentation
+```
 
 cd /home/administrator/crypto
 Erstellen Sie eine Sphinx-Konfigurationsdatei (conf.py) im Verzeichnis "docs/source/":
@@ -46,10 +44,23 @@ Aktualisieren Sie Ihre Dokumentation, indem Sie den folgenden Befehl ausführen 
 
 sphinx-build -b html docs/source/ docs/build/
 Das erstellt die HTML-Dokumentation in "docs/build/html". Sie können nun Ihre Dokumentation anzeigen, indem Sie die HTML-Dateien in einem Webbrowser öffnen.
+```
 
-zu Github
+##Github
+
+```
+Repository am PC initalisieren
+git clone https://TOKEN@github.com/michipriv/CoinChaos
+
+Code in Repository speichern
 git add .
 git commit -m "Update"
 git push
 
+Code von Repository holen
+git pull
+
+
+Git Repository
 https://github.com/michipriv/CoinChaos
+```
