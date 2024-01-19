@@ -38,15 +38,20 @@ Im Hauptverzeichnis Ihres Projekts erstellen Sie ein Verzeichnis namens "docs":
 mkdir docs
 cd docs
 Initialisieren Sie das Dokumentationsprojekt mit Sphinx:
-
 sphinx-quickstart
 Erstellen Sie RST-Dateien für Ihre Module mit dem folgenden Befehl (stellen Sie sicher, dass sich Ihr aktuelles Verzeichnis in "docs" befindet):
 
-sphinx-apidoc -o source/ /home/administrator/crypto
-Aktualisieren Sie Ihre Dokumentation, indem Sie den folgenden Befehl ausführen (immer noch im "docs"-Verzeichnis):
+Mainfile und klassen hinzufügen für die verarbeitung
+sphinx-apidoc -o sdocs/source/ /home/administrator/crypto
+sphinx-apidoc -o docs/source/ classes/
 
+Aktualisieren Sie Ihre Dokumentation, indem Sie den folgenden Befehl ausführen
+
+im Hauptverz. ~/crypto
 sphinx-build -b html docs/source/ docs/build/
-Das erstellt die HTML-Dokumentation in "docs/build/html". Sie können nun Ihre Dokumentation anzeigen, indem Sie die HTML-Dateien in einem Webbrowser öffnen.
+
+Das erstellt die HTML-Dokumentation in "docs/build/html". Sie können nun Ihre Dokumentation anzeigen, 
+indem Sie die HTML-Dateien in einem Webbrowser öffnen.
 
 zu Github
 git add .

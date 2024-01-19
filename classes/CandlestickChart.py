@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import pandas as pd
+from matplotlib.ticker import FuncFormatters
 
 class CandlestickChart:
     def __init__(self, binance_client):
@@ -55,6 +56,29 @@ class CandlestickChart:
     def draw_ema_lines(self, ax, df):
         ax.plot(df['Date'], df['ema_50'], label='EMA-50', color='blue', linewidth=2)
         ax.plot(df['Date'], df['ema_100'], label='EMA-100', color='purple', linewidth=2)
+        
+    
+    def format_chart(self, ax, symbol, interval):
+        """Formatiert das Chart mit Titeln, Achsenbeschriftungen und Legenden."""
+
+        def custom_time_formatter(x, pos):
+            """Benutzerdefinierte Formatierung für Zeitstempel auf der X-Achse."""
+            dt = mdates.num2date(x)
+            if interval.endswith('m'):
+                return dt.strftime('%M')
+            elif interval.endswith('h'):
+                return dt.strftime('%H')
+            else:
+                return dt.strftime('%Y-%m-%d')
+
+        ax.xaxis.set_major_formatter(FuncFormatter(custom_time_formatter))
+         
+        plt.xticks(rotation=45)
+        plt.title(f'{symbol} Candlestick Chart ({interval})')
+        plt.xlabel('Date')
+        plt.ylabel('Price')
+        plt.legend()
+        
 
     def plot_candlestick(self, df, symbol, interval):
         if 'ema_50' not in df.columns or 'ema_100' not in df.columns or 'vector_color' not in df.columns:
@@ -64,12 +88,5 @@ class CandlestickChart:
         fig, ax = plt.subplots()
         self.draw_candles(ax, df)
         self.draw_ema_lines(ax, df)
-
-        ax.xaxis_date()
-        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-        plt.xticks(rotation=45)
-        plt.title(f'{symbol} Candlestick Chart ({interval})')
-        plt.xlabel('Date')
-        plt.ylabel('Price')
-        plt.legend()
+        self.format_chart(ax, symbol, interval)
         plt.show()

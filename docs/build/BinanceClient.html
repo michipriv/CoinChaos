@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>BinanceClient module &#8212; crypto  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b3523f8e" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-BinanceClient">
+<span id="binanceclient-module"></span><h1>BinanceClient module<a class="headerlink" href="#module-BinanceClient" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="BinanceClient.BinanceClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">BinanceClient.</span></span><span class="sig-name descname"><span class="pre">BinanceClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_secret</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#BinanceClient.BinanceClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Eine Klasse zur Interaktion mit der Binance-API.</p>
+<p>Diese Klasse ermöglicht das Abrufen historischer Handelsdaten von der Binance-Plattform
+und ihre Speicherung in einem Pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<em>str</em>) – Der API-Schlüssel für die Binance-API.</p></li>
+<li><p><strong>api_secret</strong> (<em>str</em>) – Das API-Geheimnis für die Binance-API.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>client</strong> (<em>binance.client.Client</em>) – Eine Instanz des Binance API-Clients.</p></li>
+<li><p><strong>data</strong> (<em>pandas.DataFrame</em>) – Ein DataFrame zur Speicherung der abgerufenen Handelsdaten.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="BinanceClient.BinanceClient.add_column">
+<span class="sig-name descname"><span class="pre">add_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#BinanceClient.BinanceClient.add_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fügt eine neue Spalte zum DataFrame hinzu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>column_name</strong> (<em>str</em>) – Name der neuen Spalte.</p></li>
+<li><p><strong>values</strong> (<em>list</em><em>, </em><em>pandas.Series</em>) – Werte für die neue Spalte.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BinanceClient.BinanceClient.append_data">
+<span class="sig-name descname"><span class="pre">append_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#BinanceClient.BinanceClient.append_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hängt Daten an ein vorhandenes Pandas DataFrame an.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Keyword-Argumente für die Daten, die hinzugefügt werden sollen.
+Beinhaltet: ‘time’, ‘open_price’, ‘high_price’, ‘low_price’, 
+‘close_price’ und ‘volume’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BinanceClient.BinanceClient.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BinanceClient.BinanceClient.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gibt den aktuellen DataFrame mit Handelsdaten zurück.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Der DataFrame mit Handelsdaten.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BinanceClient.BinanceClient.get_data_binance">
+<span class="sig-name descname"><span class="pre">get_data_binance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">days_ago</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#BinanceClient.BinanceClient.get_data_binance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ruft Handelsdaten für ein bestimmtes Symbol ab und speichert sie im DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> (<em>str</em>) – Das Handelssymbol, z.B. ‘BTCUSDT’.</p></li>
+<li><p><strong>interval</strong> (<em>str</em>) – Das Zeitintervall für die Daten. Standardmäßig ‘1d’ (1 Tag).</p></li>
+<li><p><strong>days_ago</strong> (<em>int</em>) – Anzahl der Tage in der Vergangenheit für den Beginn der Datenabfrage.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BinanceClient.BinanceClient.initialize_data">
+<span class="sig-name descname"><span class="pre">initialize_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BinanceClient.BinanceClient.initialize_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialisiert den DataFrame mit den erforderlichen Spalten.</p>
+<p>Die Spalten sind: ‘time’, ‘open_price’, ‘high_price’, ‘low_price’, ‘close_price’, 
+‘volume’, ‘ema_50’, ‘ema_100’ und ‘vector_color’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="BinanceClient.BinanceClient.print_data">
+<span class="sig-name descname"><span class="pre">print_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BinanceClient.BinanceClient.print_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zeigt alle Daten des internen DataFrame an.</p>
+<p>Gibt den aktuellen Inhalt des DataFrame <cite>self.data</cite> aus.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">crypto</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Michael.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/BinanceClient.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

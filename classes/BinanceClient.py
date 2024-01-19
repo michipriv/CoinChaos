@@ -13,25 +13,28 @@ class BinanceClient:
     Diese Klasse ermöglicht das Abrufen historischer Handelsdaten von der Binance-Plattform
     und ihre Speicherung in einem Pandas DataFrame.
 
-    Attributes:
-        client (binance.client.Client): Eine Instanz des Binance API-Clients.
-        data (pd.DataFrame): Ein DataFrame zur Speicherung der abgerufenen Handelsdaten.
+    :param api_key: Der API-Schlüssel für die Binance-API.
+    :type api_key: str
+    :param api_secret: Das API-Geheimnis für die Binance-API.
+    :type api_secret: str
 
-    Methods:
-        get_crypto_data(symbol, days_ago, interval='1d'): Ruft Handelsdaten für ein bestimmtes Symbol ab.
-        update_data(symbol, days_ago, interval='1d'): Aktualisiert den vorhandenen DataFrame mit neuen Daten.
-        get_data(): Gibt den aktuellen DataFrame mit Handelsdaten zurück.
-        testAbruf(symbol, days_ago, interval='1d'): Testet das Abrufen von Daten und zeigt eine Vorschau an.
+    :ivar client: Eine Instanz des Binance API-Clients.
+    :vartype client: binance.client.Client
+    :ivar data: Ein DataFrame zur Speicherung der abgerufenen Handelsdaten.
+    :vartype data: pandas.DataFrame
     """
-
+    
+    
     def __init__(self, api_key, api_secret):
         """
         Initialisiert die BinanceClient-Klasse mit API-Schlüsseln.
 
-        Args:
-            api_key (str): Der API-Schlüssel für die Binance-API.
-            api_secret (str): Das API-Geheimnis für die Binance-API.
+        :param api_key: Der API-Schlüssel für die Binance-API.
+        :type api_key: str
+        :param api_secret: Das API-Geheimnis für die Binance-API.
+        :type api_secret: str
         """
+            
         self.client = Client(api_key, api_secret)
         self.data = pd.DataFrame()
         
@@ -39,16 +42,12 @@ class BinanceClient:
     def initialize_data(self):
         """
         Initialisiert den DataFrame mit den erforderlichen Spalten.
-        
-        time (str): Zeitstempel.
-        open_price (float): Eröffnungspreis.
-        high_price (float): Höchstpreis.
-        low_price (float): Tiefstpreis.
-        close_price (float): Schlusspreis.
-        volume (int): Volumen.
-              
-              
+
+        Die Spalten sind: 'time', 'open_price', 'high_price', 'low_price', 'close_price', 
+        'volume', 'ema_50', 'ema_100' und 'vector_color'.
         """
+        
+        
         columns = ['time', 'open_price', 'high_price', 'low_price', 'close_price', 
                       'volume','ema_50','ema_100','vector_color']
         self.data = pd.DataFrame(columns=columns)
@@ -60,15 +59,15 @@ class BinanceClient:
         
         """
         Ruft Handelsdaten für ein bestimmtes Symbol ab und speichert sie im DataFrame.
-    
-        Args:
-            symbol (str): Das Handelssymbol, z.B. 'BTCUSDT'.
-            days_ago (int): Anzahl der Tage in der Vergangenheit für den Beginn der Datenabfrage.
-            interval (str, optional): Das Zeitintervall für die Daten. Standardmäßig '1d' (1 Tag).
-    
-        Returns:
-            None: Die Methode aktualisiert den internen DataFrame mit den abgerufenen Daten.
+
+        :param symbol: Das Handelssymbol, z.B. 'BTCUSDT'.
+        :type symbol: str
+        :param interval: Das Zeitintervall für die Daten. Standardmäßig '1d' (1 Tag).
+        :type interval: str
+        :param days_ago: Anzahl der Tage in der Vergangenheit für den Beginn der Datenabfrage.
+        :type days_ago: int
         """
+        
         # Umwandlung des Interval-Strings in timedelta
         end_time = datetime.now()
        
@@ -88,32 +87,28 @@ class BinanceClient:
             volume = float(candle[5])
     
             # Verwende die append_data-Methode, um die Daten zum DataFrame hinzuzufügen
-            self.append_data(
-                time=time,
-                open_price=open_price,
-                high_price=high_price,
-                low_price=low_price,
-                close_price=close_price,
-                volume=volume
-            )
+            self.append_data(         
+               time=time,
+               symbol=symbol,
+               interval=interval,
+               open_price=open_price,
+               high_price=high_price,
+               low_price=low_price,
+               close_price=close_price,
+               volume=volume
+           )
 
    
 
     def append_data(self, **kwargs):
         """
         Hängt Daten an ein vorhandenes Pandas DataFrame an.
-        
-        Args:
-            **kwargs: Keyword-Argumente für die Daten, die hinzugefügt werden sollen.
-            
-                Args:
-                    time (str): Zeitstempel.
-                    open_price (float): Eröffnungspreis.
-                    high_price (float): Höchstpreis.
-                    low_price (float): Tiefstpreis.
-                    close_price (float): Schlusspreis.
-                    volume (int): Volumen.
+
+        :param kwargs: Keyword-Argumente für die Daten, die hinzugefügt werden sollen.
+                       Beinhaltet: 'time', 'open_price', 'high_price', 'low_price', 
+                       'close_price' und 'volume'.
         """
+        
         new_row = kwargs
         new_row_df = pd.DataFrame([new_row])
         self.data = pd.concat([self.data, new_row_df], ignore_index=True)
@@ -123,8 +118,10 @@ class BinanceClient:
         """
         Zeigt alle Daten des internen DataFrame an.
 
-        Diese Methode gibt den aktuellen Inhalt des DataFrame `self.data` aus.
+        Gibt den aktuellen Inhalt des DataFrame `self.data` aus.
         """
+        
+        
         pd.set_option('display.max_rows', None)  # Zeige alle Zeilen
         pd.set_option('display.max_columns', None)  # Zeige alle Spalten
   
@@ -141,7 +138,16 @@ class BinanceClient:
             #print(selected_columns)
    
     def add_column(self, column_name, values):
-        # Fügen Sie eine neue Spalte hinzu
+        """
+        Fügt eine neue Spalte zum DataFrame hinzu.
+
+        :param column_name: Name der neuen Spalte.
+        :type column_name: str
+        :param values: Werte für die neue Spalte.
+        :type values: list, pandas.Series
+        """
+
+
         self.data[column_name] = values
         
 
@@ -149,7 +155,11 @@ class BinanceClient:
     def get_data(self):
         """
         Gibt den aktuellen DataFrame mit Handelsdaten zurück.
+
+        :return: Der DataFrame mit Handelsdaten.
+        :rtype: pandas.DataFrame
         """
+        
         return self.data
 
     
