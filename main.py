@@ -51,15 +51,11 @@ def main():
     api_keys = config_reader.read_config()
 
     symbol = 'BTCUSDT'
-<<<<<<< HEAD
-    symbol = 'ADAUSDT'
-    interval = '1h'  # String für INterval 1m,3m,5m,1d, 1w, 1M
-    days_ago = 2     # Integer für abzurufende Tage
-=======
+
     symbol = 'RNDRUSDT'
     interval = '4h'  # String für INterval 1m,3m,5m,1d, 1w, 1M
     days_ago = 50      # Integer für abzurufende Tage
->>>>>>> 1db53a5c92dc9c9b9ba5fe9c0a1b0d62fadc9e2d
+
 
     
     binance_client = BinanceClient(api_keys.get('api_key'), api_keys.get('secret_key'), 'Indian/Mahe')

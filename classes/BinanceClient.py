@@ -25,15 +25,9 @@ class BinanceClient:
     :ivar data: Ein DataFrame zur Speicherung der abgerufenen Handelsdaten.
     :vartype data: pandas.DataFrame
     """
-<<<<<<< HEAD
-    
-    
-    def __init__(self, api_key, api_secret):
-=======
 
     def __init__(self, api_key, api_secret, time_zone='UTC'):
          
->>>>>>> 1db53a5c92dc9c9b9ba5fe9c0a1b0d62fadc9e2d
         """
         Initialisiert die BinanceClient-Klasse mit API-Schlüsseln.
 
@@ -51,11 +45,7 @@ class BinanceClient:
     def initialize_data(self):
         """
         Initialisiert den DataFrame mit den erforderlichen Spalten.
-<<<<<<< HEAD
 
-        Die Spalten sind: 'time', 'open_price', 'high_price', 'low_price', 'close_price', 
-        'volume', 'ema_50', 'ema_100' und 'vector_color'.
-=======
         
         time (str): Zeitstempel.
         open_price (float): Eröffnungspreis.
@@ -64,13 +54,11 @@ class BinanceClient:
         close_price (float): Schlusspreis.
         volume (int): Volumen.
         
-              
-              
->>>>>>> 1db53a5c92dc9c9b9ba5fe9c0a1b0d62fadc9e2d
+
         """
         
         
-        columns = ['time', 'open_price', 'high_price', 'low_price', 'close_price', 
+        columns = ['time', 'time1','open_price', 'high_price', 'low_price', 'close_price', 
                       'volume','vector_color', 'lowest_low']
         self.data = pd.DataFrame(columns=columns)
 
@@ -102,27 +90,7 @@ class BinanceClient:
         client.get_data_binance('BTCUSDT', '1h', 10)
 
         """
-<<<<<<< HEAD
-        Ruft Handelsdaten für ein bestimmtes Symbol ab und speichert sie im DataFrame.
 
-        :param symbol: Das Handelssymbol, z.B. 'BTCUSDT'.
-        :type symbol: str
-        :param interval: Das Zeitintervall für die Daten. Standardmäßig '1d' (1 Tag).
-        :type interval: str
-        :param days_ago: Anzahl der Tage in der Vergangenheit für den Beginn der Datenabfrage.
-        :type days_ago: int
-        """
-        
-        # Umwandlung des Interval-Strings in timedelta
-        end_time = datetime.now()
-       
-        start_time = end_time - timedelta(days=days_ago)
-        start_str = start_time.strftime('%d %b, %Y')
-        end_str = end_time.strftime('%d %b, %Y')
-   
-        candles = self.client.get_historical_klines(symbol, interval, start_str, end_str)
-   
-=======
         # Abrufen der aktuellen Serverzeit von Binance
         server_time = self.client.get_server_time()
         server_dt = datetime.fromtimestamp(server_time['serverTime'] / 1000, pytz.utc)
@@ -142,7 +110,7 @@ class BinanceClient:
         # Formatierung der Zeitstempel für die API-Anfrage
         start_str = start_time.strftime('%Y-%m-%dT%H:%M:%SZ')
         end_str = server_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
->>>>>>> 1db53a5c92dc9c9b9ba5fe9c0a1b0d62fadc9e2d
+
     
         # Abrufen der historischen Kurse mit Limit
         candles = self.client.get_historical_klines(symbol, interval, start_str, end_str, limit=limit)
@@ -164,7 +132,7 @@ class BinanceClient:
             volume = float(candle[5])
     
             # Verwende die append_data-Methode, um die Daten zum DataFrame hinzuzufügen
-<<<<<<< HEAD
+
             self.append_data(         
                time=time,
                symbol=symbol,
@@ -175,17 +143,7 @@ class BinanceClient:
                close_price=close_price,
                volume=volume
            )
-=======
-            self.append_data(
-                time=time,
-                time1=formatted_time,
-                open_price=open_price,
-                high_price=high_price,
-                low_price=low_price,
-                close_price=close_price,
-                volume=volume
-            )
->>>>>>> 1db53a5c92dc9c9b9ba5fe9c0a1b0d62fadc9e2d
+
 
    
 

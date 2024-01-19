@@ -1,15 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import pandas as pd
-<<<<<<< HEAD
-from matplotlib.ticker import FuncFormatters
-=======
 from matplotlib.ticker import FuncFormatter
 
 
-
-
->>>>>>> 1db53a5c92dc9c9b9ba5fe9c0a1b0d62fadc9e2d
 
 class CandlestickChart:
     def __init__(self, binance_client):
@@ -32,7 +26,7 @@ class CandlestickChart:
 
 
     def prepare_dataframe(self, df):
-        df['Date'] = pd.to_datetime(df['time1'])  # Verwenden Sie 'time1' statt 'time'
+        df['Date'] = pd.to_datetime(df['time'])  
         df['Date'] = df['Date'].apply(mdates.date2num)
         return df
 
@@ -62,32 +56,7 @@ class CandlestickChart:
         ax.plot(df['Date'], df['ema_5'], label='EMA-5', color='yellow', linewidth=2)
         ax.plot(df['Date'], df['ema_13'], label='EMA-13', color='orange', linewidth=2)
         ax.plot(df['Date'], df['ema_50'], label='EMA-50', color='blue', linewidth=2)
-<<<<<<< HEAD
-        ax.plot(df['Date'], df['ema_100'], label='EMA-100', color='purple', linewidth=2)
-        
-    
-    def format_chart(self, ax, symbol, interval):
-        """Formatiert das Chart mit Titeln, Achsenbeschriftungen und Legenden."""
 
-        def custom_time_formatter(x, pos):
-            """Benutzerdefinierte Formatierung für Zeitstempel auf der X-Achse."""
-            dt = mdates.num2date(x)
-            if interval.endswith('m'):
-                return dt.strftime('%M')
-            elif interval.endswith('h'):
-                return dt.strftime('%H')
-            else:
-                return dt.strftime('%Y-%m-%d')
-
-        ax.xaxis.set_major_formatter(FuncFormatter(custom_time_formatter))
-         
-        plt.xticks(rotation=45)
-        plt.title(f'{symbol} Candlestick Chart ({interval})')
-        plt.xlabel('Date')
-        plt.ylabel('Price')
-        plt.legend()
-        
-=======
         ax.plot(df['Date'], df['ema_100'], label='EMA-100', color='green', linewidth=2)
         ax.plot(df['Date'], df['ema_200'], label='EMA-200', color='white', linewidth=2)
         ax.plot(df['Date'], df['ema_800'], label='EMA-800', color='violet', linewidth=2)
@@ -108,7 +77,7 @@ class CandlestickChart:
 
 
     ################################################
->>>>>>> 1db53a5c92dc9c9b9ba5fe9c0a1b0d62fadc9e2d
+
 
 
     def plot_candlestick(self, df, symbol, interval):
@@ -117,12 +86,7 @@ class CandlestickChart:
         
         df = self.prepare_dataframe(df)
         fig, ax = plt.subplots()
-<<<<<<< HEAD
-        self.draw_candles(ax, df)
-        self.draw_ema_lines(ax, df)
-        self.format_chart(ax, symbol, interval)
-        plt.show()
-=======
+
         ax.set_facecolor('black')  # Setzt den Hintergrund auf Schwarz
         self.draw_candles(ax, df)       #Kerzen zeichnen
         self.draw_ema_lines(ax, df)     # emas zeichnen
@@ -170,4 +134,4 @@ class CandlestickChart:
             # Zeichne eine Linie für 50%-Punkt des Musters 
             # if row['w_50_percent'] == '50%':
             #    ax.axhline(y=row['low_price'], color='red', linestyle='--', xmin=xmin, xmax=xmax)
->>>>>>> 1db53a5c92dc9c9b9ba5fe9c0a1b0d62fadc9e2d
+
