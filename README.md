@@ -4,7 +4,7 @@
 ## Installation der erforderlichen Module
 
 Verwenden Sie die folgenden Befehle, um die benötigten Module zu installieren:
-"""
+```
 ChatGPT Prompt
 
 Verhalte ich wie ein Crypto Trader und Python Entwickler.
