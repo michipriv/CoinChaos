@@ -51,12 +51,18 @@ def main():
     api_keys = config_reader.read_config()
 
     symbol = 'BTCUSDT'
+<<<<<<< HEAD
     symbol = 'ADAUSDT'
     interval = '1h'  # String für INterval 1m,3m,5m,1d, 1w, 1M
     days_ago = 2     # Integer für abzurufende Tage
+=======
+    symbol = 'RNDRUSDT'
+    interval = '4h'  # String für INterval 1m,3m,5m,1d, 1w, 1M
+    days_ago = 50      # Integer für abzurufende Tage
+>>>>>>> 1db53a5c92dc9c9b9ba5fe9c0a1b0d62fadc9e2d
 
     
-    binance_client = BinanceClient(api_keys.get('api_key'), api_keys.get('secret_key'))
+    binance_client = BinanceClient(api_keys.get('api_key'), api_keys.get('secret_key'), 'Indian/Mahe')
     
     # Daten abrufen und aufbereiten
     binance_client.initialize_data()
@@ -65,12 +71,26 @@ def main():
     #technische INdikatoren berechnen für die abgerufenen Daten und im Panda Framework abspeichern    
     
     technical_indicators = TechnicalIndicators(binance_client)
+    technical_indicators.calculate_ema(5)
+    technical_indicators.calculate_ema(13)
     technical_indicators.calculate_ema(50)
     technical_indicators.calculate_ema(100)
-    technical_indicators.calc_vector_candles()
-    technical_indicators.calculate_candle_color()
+    technical_indicators.calculate_ema(200)
+    technical_indicators.calculate_ema(800)
     
-    binance_client.print_data()
+    technical_indicators.calc_vector_candles()      #vector candle berechnen
+        
+    technical_indicators.calculate_candle_color()   #kerzenfarbe berechnen
+    
+    #erst nach cnadle color ausführen "
+    technical_indicators.lower_low()            # suche das letzte tiefste tief
+    #technical_indicators.higher_high()            # suche das letzte tiefste tief
+    technical_indicators.w_pattern()
+    
+    
+    
+    
+    binance_client.print_data()         # Frame Data anzeigen
    
     
    #Anzeige des Chart

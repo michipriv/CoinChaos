@@ -1,13 +1,10 @@
-matierung:
 
-markdown
-Copy code
 # Projekt Dokumentation
 
 ## Installation der erforderlichen Module
 
 Verwenden Sie die folgenden Befehle, um die benötigten Module zu installieren:
-"""
+```
 ChatGPT Prompt
 
 Verhalte ich wie ein Crypto Trader und Python Entwickler.
@@ -19,10 +16,10 @@ Antworte mit BINGO wenn es klar für dich ist.
 pip install python-binance
 pip install matplotlib mplfinance
 pip install sphinx
-Erstellung der Sphinx-Dokumentation
-Um Ihre Dokumentation mithilfe von Sphinx zu erstellen, folgen Sie diesen Schritten:
 
-Wechseln Sie in Ihr Projektverzeichnis:
+```
+## Sphinx-Dokumentation
+```
 
 cd /home/administrator/crypto
 Erstellen Sie eine Sphinx-Konfigurationsdatei (conf.py) im Verzeichnis "docs/source/":
@@ -50,16 +47,29 @@ Aktualisieren Sie Ihre Dokumentation, indem Sie den folgenden Befehl ausführen
 im Hauptverz. ~/crypto
 sphinx-build -b html docs/source/ docs/build/
 
+
 Das erstellt die HTML-Dokumentation in "docs/build/html". Sie können nun Ihre Dokumentation anzeigen, 
 indem Sie die HTML-Dateien in einem Webbrowser öffnen.
+=======
+Das erstellt die HTML-Dokumentation in "docs/build/html". Sie können nun Ihre Dokumentation anzeigen, indem Sie die HTML-Dateien in einem Webbrowser öffnen.
+```
 
-zu Github
+##Github
+
+```
+Repository am PC initalisieren
+git clone https://TOKEN@github.com/michipriv/CoinChaos
+
+
+Code in Repository speichern
 git add .
 git commit -m "Update"
 git push
 
+Code von Repository holen
+git pull
+
+
+Git Repository
 https://github.com/michipriv/CoinChaos
-
-von Github
-
-"""
+```

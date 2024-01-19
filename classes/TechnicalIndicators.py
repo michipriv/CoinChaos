@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
+import numpy as np
 
 
 class TechnicalIndicators:
@@ -79,3 +80,80 @@ class TechnicalIndicators:
         """
         self.data['Kerze'] = self.data.apply(
             lambda row: 'Grün' if row['close_price'] > row['open_price'] else 'Rot', axis=1)
+        
+     
+    def lower_low(self):
+        
+        """
+        Identifiziert das tiefste Tief innerhalb eines Musters von zwei roten und zwei grünen Kerzen.
+        
+        Diese Methode fügt dem DataFrame drei neue Spalten hinzu: 'lower_low', 'muster_start' und 'muster_ende'.
+        Diese Spalten markieren 'LL' für die Kerze mit dem tiefsten Tief, 'AA' für den Anfang und 'EE' für das Ende des Musters.
+        
+        Returns:
+            DataFrame: Der bearbeitete DataFrame mit den neuen Spalten.
+        """
+ 
+        df = self.data
+        df['lower_low'] = ''  # Initialisiere alle Werte mit 'NA'
+        df['lower_low_start'] = ''  # Für den Anfang des Musters
+        df['lower_low_ende'] = ''  # Für das Ende des Musters
+    
+        for i in range(2, len(df) - 2):
+            if df['Kerze'][i - 2] == 'Rot' and df['Kerze'][i - 1] == 'Rot':
+                # Markiere den Anfang des Musters
+                df.at[i - 2, 'lower_low_start'] = 'AA'
+    
+                # Suche nach zwei aufeinanderfolgenden grünen Kerzen nach den roten Kerzen
+                for j in range(i, len(df) - 1):
+                    if df['Kerze'][j] == 'Grün' and df['Kerze'][j + 1] == 'Grün':
+                        # Markiere das Ende des Musters
+                        df.at[j + 1, 'lower_low_ende'] = 'EE'
+    
+                        # Finde das tiefste Tief im Muster
+                        start = i - 2
+                        ende = j + 1
+                        lowest_low_index = df['low_price'][start:ende + 1].idxmin()
+                        df.at[lowest_low_index, 'lower_low'] = 'LL'
+                        break
+    
+        return df
+    
+    def w_pattern(self):
+        """
+        Identifiziert das W-Muster in den Handelsdaten.
+        Fügt dem DataFrame Spalten 'w_pattern', 'w_start', 'w_middle', und 'w_50_percent' hinzu,
+        die das Vorhandensein des Musters und dessen verschiedene Phasen markieren.
+        """
+        df = self.data
+        df['w_pattern'] = ''
+        df['w_start'] = ''
+        df['w_middle'] = ''
+        df['w_50_percent'] = ''
+    
+        # Verwende 'lower_low' Daten, um das erste W (W1) zu identifizieren
+        for i in range(1, len(df) - 1):
+            if df['lower_low'][i] == 'LL':  # Beginn von W1
+                w1_start_price = df['low_price'][i]
+                df.at[i, 'w_start'] = 'AA'
+                middle_index = None
+    
+                # Suche nach dem mittleren Teil des W mit mindestens 3 Balken Abstand
+                for j in range(i + 3, min(i + 5, len(df) - 1)):
+                    if df['high_price'][j] > w1_start_price:
+                        # Prüfen, ob der Preis um mindestens 2% gefallen ist
+                        price_fall = (w1_start_price - df['low_price'][j]) / w1_start_price
+                        if price_fall >= 0.02:
+                            df.at[j, 'w_middle'] = 'MM'
+                            middle_index = j
+                            break
+    
+                if middle_index:
+                    # Prüfen Sie den Wiederaufstieg
+                    for k in range(middle_index, min(middle_index + 5, len(df))):
+                        if df['high_price'][k] >= (w1_start_price + (df['high_price'][i] - w1_start_price) * 0.5):
+                            df.at[k, 'w_50_percent'] = '50%'
+                            df.at[i, 'w_pattern'] = 'W'  # Markiere das gesamte Muster
+                            break
+    
+        return df
