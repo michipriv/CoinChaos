@@ -58,7 +58,7 @@ class BinanceClient:
         """
         
         
-        columns = ['time', 'time1','open_price', 'high_price', 'low_price', 'close_price', 
+        columns = ['time', 'open_price', 'high_price', 'low_price', 'close_price', 
                       'volume','vector_color', 'lowest_low']
         self.data = pd.DataFrame(columns=columns)
 

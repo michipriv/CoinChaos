@@ -50,9 +50,10 @@ def main():
     config_reader = ApiConfigReader(config_path)
     api_keys = config_reader.read_config()
 
-    symbol = 'BTCUSDT'
+    
 
     symbol = 'RNDRUSDT'
+    symbol = 'BTCUSDT'
     interval = '4h'  # String für INterval 1m,3m,5m,1d, 1w, 1M
     days_ago = 50      # Integer für abzurufende Tage
 
@@ -81,7 +82,7 @@ def main():
     #erst nach cnadle color ausführen "
     technical_indicators.lower_low()            # suche das letzte tiefste tief
     #technical_indicators.higher_high()            # suche das letzte tiefste tief
-    technical_indicators.w_pattern()
+    #technical_indicators.w_pattern()
     
     
     
