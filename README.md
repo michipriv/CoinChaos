@@ -62,6 +62,10 @@ import subprocess; subprocess.run(["./git.sh"], shell=True)
 ```
 Repository am PC initalisieren
 git clone https://TOKEN@github.com/michipriv/CoinChaos
+git checkout branch-name
+
+git fetch --tags
+git checkout -b tag-name
 
 
 Code in Repository speichern
@@ -71,6 +75,19 @@ git push
 
 Code von Repository holen
 git pull
+
+Branch erstellen
+ein Branch wird für zwischenduch (intern) beim Entwickeln verwendet ununterstützend kanna auch parallel entwicklungen 
+git checkout -b branch-name
+git add .
+git commit -m "Commit-Nachricht"
+git push origin branch-name
+
+Tag erstellen (das hier verwenden zum üben)
+EIn Tag wird für finanle oder bestimmte Revisionen (extern) die weitergeeben werden verwendet
+git tag -a v1.0. -m "Mein Release 1.0.0"
+git push origin v1.0
+
 
 
 Git Repository
