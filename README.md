@@ -60,7 +60,12 @@ Das erstellt die HTML-Dokumentation in "docs/build/html". Sie können nun Ihre D
 für spyder in der Console:
 Code commit zu github
 
-import subprocess; subprocess.run(["./git.sh", "-u"], shell=True)
+import subprocess; subprocess.run(["./git.sh", "u"])
+
+Neues Tag setzen
+
+import subprocess; subprocess.run(["./git.sh", "t", "v1.0.0"])
+
 
 
 
