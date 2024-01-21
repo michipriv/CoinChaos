@@ -55,12 +55,15 @@ Das erstellt die HTML-Dokumentation in "docs/build/html". Sie können nun Ihre D
 ```
 
 ##Github
+```
 
 für spyder in der Console:
-import subprocess; subprocess.run(["./git.sh"], shell=True)
+Code commit zu github
+
+import subprocess; subprocess.run(["./git.sh", "-u"], shell=True)
 
 
-```
+
 Repository am PC initalisieren
 git clone https://TOKEN@github.com/michipriv/CoinChaos
 git checkout branch-name
@@ -83,6 +86,8 @@ git checkout -b branch-name
 git add .
 git commit -m "Commit-Nachricht"
 git push origin branch-name
+git push --set-upstream origin Basis
+
 
 Tag erstellen (das hier verwenden zum üben)
 EIn Tag wird für finanle oder bestimmte Revisionen (extern) die weitergeeben werden verwendet
