@@ -59,6 +59,7 @@ Das erstellt die HTML-Dokumentation in "docs/build/html". Sie können nun Ihre D
 für spyder in der Console:
 import subprocess; subprocess.run(["./git.sh"], shell=True)
 
+
 ```
 Repository am PC initalisieren
 git clone https://TOKEN@github.com/michipriv/CoinChaos
