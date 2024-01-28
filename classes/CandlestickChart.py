@@ -63,17 +63,15 @@ class CandlestickChart:
         
         
     def format_chart(self, ax, symbol, interval):
-            def custom_formatter(x, pos):
-                dt = mdates.num2date(x)
-                return dt.strftime('%H:%M')  # Format für Stunden und Minuten
-        
-            ax.xaxis_date()
-            ax.xaxis.set_major_formatter(FuncFormatter(custom_formatter))
-        
-            plt.xticks(rotation=0)
-            plt.title(f'{symbol} Candlestick Chart ({interval})')
-            plt.ylabel('Price')
-            plt.legend()
+      
+    
+      
+       plt.xticks(rotation=0)
+       plt.title(f'{symbol} Candlestick Chart ({interval})')
+       plt.ylabel('Price')
+    
+       plt.legend()
+
 
 
     ################################################
@@ -91,16 +89,20 @@ class CandlestickChart:
         self.draw_candles(ax, df)       #Kerzen zeichnen
         self.draw_ema_lines(ax, df)     # emas zeichnen
         self.format_chart(ax, symbol, interval)  # Chart formatieren
+        
+        
         #self.draw_lowest_low(ax,df)
-        #self.draw_highest_high(ax,df)
         self.draw_w_pattern(ax,df)
         
-        plt.show()      # Finale aufruf des Chrts zur ANzeige
+        plt.show()      # Finale aufruf des Charts zur Anzeige
+        
+        
+       
         
     ################################################
 
     def draw_lowest_low(self, ax, df):
-        length_candle = 5   #länge der Lnie in Kerzen
+        length_candle = 3   #länge der Lnie in Kerzen
         
         for idx, row in df.iterrows():
             end_idx = min(idx + length_candle, len(df))
@@ -112,26 +114,20 @@ class CandlestickChart:
             # Zeichne eine Linie für 'LL'
             if row['lower_low'] == 'LL':
                 ax.axhline(y=row['low_price'], color='blue', linestyle='--', xmin=xmin, xmax=xmax)
-    
+
                 
     def draw_w_pattern(self, ax, df):
-        length_candle = 1  # Länge der Linie in Anzahl der Kerzen
-    
+        length_candle = 3   #länge der Lnie in Kerzen
+        
         for idx, row in df.iterrows():
+            end_idx = min(idx + length_candle, len(df))
+    
             # Berechne xmin und xmax für die Linien
-            # Die x-Position jeder Kerze entspricht ihrem Index im DataFrame
-            xmin = (idx - 0.5) / len(df)  # Verschiebe xmin ein wenig nach links von der Kerze
-            xmax = (idx + length_candle - 0.5) / len(df)  # xmax auf die Länge der Linie einstellen
+            xmin = idx / len(df)
+            xmax = end_idx / len(df)
     
-            # Zeichne eine Linie für Start des Musters = lower_low
-            if row['w_start'] == 'AA':
-                ax.axhline(y=row['low_price'], color='orange', linestyle='--', xmin=xmin, xmax=xmax)
-    
-            # Zeichne eine Linie für Mitte des Musters 
-            if row['w_middle'] == 'MM':
+            # Zeichne eine Linie für 'LL'
+            if row['w1'] == 'w1':
                 ax.axhline(y=row['low_price'], color='yellow', linestyle='--', xmin=xmin, xmax=xmax)
-    
-            # Zeichne eine Linie für 50%-Punkt des Musters 
-            # if row['w_50_percent'] == '50%':
-            #    ax.axhline(y=row['low_price'], color='red', linestyle='--', xmin=xmin, xmax=xmax)
 
+     

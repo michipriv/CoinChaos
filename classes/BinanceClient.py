@@ -45,21 +45,56 @@ class BinanceClient:
     def initialize_data(self):
         """
         Initialisiert den DataFrame mit den erforderlichen Spalten.
-
         
-        time (str): Zeitstempel.
-        open_price (float): Eröffnungspreis.
-        high_price (float): Höchstpreis.
-        low_price (float): Tiefstpreis.
-        close_price (float): Schlusspreis.
-        volume (int): Volumen.
-        
-
         """
         
         
-        columns = ['time', 'open_price', 'high_price', 'low_price', 'close_price', 
-                      'volume','vector_color', 'lowest_low']
+        columns = ['time', 
+                   'open_price', 
+                   'high_price', 
+                   'low_price', 
+                   'close_price', 
+                   'volume',
+                   'vector_color', 
+                   'lowest_low',
+                   'symbol',
+                   'interval',
+                   'ema_5',
+                   'ema_13',
+                   'ema_50',
+                   'ema_100',
+                   'ema_200',
+                   'ema_800',
+                   'Kerze',
+                   'lower_low',
+                   'lower_low_start',
+                   'lower_low_ende',
+                   'w1',
+                   'w_middle',
+                   'w2'
+                   
+                   ]
+
+
+        '''
+        binance time ... UnixTimestamp in milliseconds
+        
+            time            open_price   high_price  low_price  close_price volume    vector_color lowest_low    symbol interval    ema_5         ema_13         ema_50        ema_100       ema_200       ema_800        Kerze    lower_low  lower_low_start lower_low_ende  w1 w_middle w2
+        0   1705814100000    41675.84    41675.84   41645.41     41656.10   96.21797  darkgrey     NaN  BTCUSDT      15m            41656.100000  41656.100000   41656.100000  41656.100000  41656.100000  41656.100000   Rot                 AA     
+        1   1705815000000    41656.10    41656.10   41644.93     41649.97   71.57745  darkgrey     NaN  BTCUSDT      15m            41654.056667  41655.224286   41655.859608  41655.978614  41656.039005  41656.084694   Rot                 AA
+        2   1705815900000    41649.97    41649.98   41628.46     41628.47   72.93337  darkgrey     NaN  BTCUSDT      15m            41645.527778  41651.402245   41654.785506  41655.433889  41655.764687  41656.015744   Rot
+        3   1705816800000    41628.46    41654.99   41628.46     41654.98   69.95751  lightgrey    NaN  BTCUSDT      15m            41648.678519  41651.913353   41654.793133  41655.424901  41655.756879  41656.013157  Grün 
+        4   1705817700000    41654.99    41654.99   41564.29     41633.43  139.76318  darkgrey     NaN  BTCUSDT      15m            41643.595679  41649.272874   41653.955363  41654.989358  41655.534721  41655.956770   Rot        LL       AA                              w1     
+        5   1705818600000    41633.42    41633.43   41613.75     41613.75   53.42719  darkgrey     NaN  BTCUSDT      15m            41633.647119  41644.198178   41652.378682  41654.172737  41655.118952  41655.851385   Rot                 AA     
+        6   1705819500000    41613.75    41613.76   41583.24     41597.66   86.62183  darkgrey     NaN  BTCUSDT      15m            41621.651413  41637.549866   41650.232851  41653.053673  41654.547221  41655.706088   Rot        LL       A                               w1
+        7   1705820400000    41597.66    41613.10   41587.75     41596.54  116.74075  darkgrey     NaN  BTCUSDT      15m            41613.280942  41631.691314   41648.127249  41651.934591  41653.970035  41655.558357   Rot   
+        8   1705821300000    41596.55    41630.00   41587.27     41629.99   66.25310  lightgrey    NaN  BTCUSDT      15m            41618.850628  41631.448269   41647.415985  41651.500044  41653.731428  41655.494516  Grün             
+        9   1705822200000    41630.00    41669.94   41629.99     41651.11   62.12878  lightgrey    NaN  BTCUSDT      15m            41629.603752  41634.257088   41647.560848  41651.492321  41653.705344  41655.483569  Grün                                 EE            
+        10  1705823100000    41651.11    41656.80   41645.04     41648.51   39.86989  darkgrey     NaN  BTCUSDT      15m            41635.905835  41636.29321    41647.598070  41651.433265  41653.653649  41655.466157   Rot 
+        
+        '''
+
+
         self.data = pd.DataFrame(columns=columns)
 
     
