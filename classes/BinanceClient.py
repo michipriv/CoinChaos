@@ -244,4 +244,110 @@ class BinanceClient:
         
         return self.data
 
+    def get_commission(self):
+        """
+        Ruft die Handelsgebühren von Binance ab und speichert sie in einem DataFrame.
+        """
+        # Versuche, die Handelsgebühreninformationen abzurufen
+        try:
+            fees_info = self.client.get_trade_fee()  # Ruft Gebühren für alle Handelspaare ab
+            # Erstelle ein DataFrame aus den Gebühreninformationen
+            fees_df = pd.DataFrame(fees_info)
+            
+            # Falls spezifische Bearbeitungen benötigt werden, können sie hier hinzugefügt werden
+            # Zum Beispiel, Extraktion spezifischer Felder oder Anpassungen
+            
+            # Speichere das Ergebnis in df_fee
+            self.df_fee = fees_df
+            print("Handelsgebühren erfolgreich abgerufen und gespeichert.")
+        except Exception as e:
+            print(f"Ein Fehler ist aufgetreten: {e}")
+ 
+        
+ 
+             
+    def show_commission(self, symbol=None):
+        """
+        Zeigt die Gebühreninformationen aus dem df_fee DataFrame. Kann auf ein spezifisches Symbol gefiltert werden.
+        
+        :param symbol: Optional. Das Handelssymbol, für das die Gebühren angezeigt werden sollen.
+        """
+        #print(self.df_fee.columns)
+        
+        if hasattr(self, 'df_fee') and not self.df_fee.empty:
+            if symbol:
+                # Filtert den DataFrame auf das gegebene Symbol
+                df_filtered = self.df_fee[self.df_fee['symbol'] == symbol]
+                if not df_filtered.empty:
+                    print(f"Gebühreninformationen für {symbol}:")
+                    print(df_filtered[['symbol', 'makerCommission', 'takerCommission']])
+                else:
+                    print(f"Keine Gebühreninformationen für {symbol} gefunden.")
+            else:
+                print("Gebühreninformationen für alle Symbole:")
+                print(self.df_fee[['symbol', 'makerCommission', 'takerCommission']])
+        else:
+            print("Keine Gebühreninformationen verfügbar.")
     
+    
+
+             
+    def get_funding_rate(self, symbol):
+        """
+        Ruft die aktuelle Funding Rate für ein spezifisches Futures-Symbol ab.
+        
+        :param symbol: Das Handelssymbol für den Futures-Kontrakt (z.B. 'BTCUSDT').
+        """
+        try:
+            # API-Endpunkt für die aktuelle Funding Rate
+            funding_rate_info = self.client.futures_funding_rate(symbol=symbol)
+            
+            # Zeigt die Funding Rate Information
+            print(f"Funding Rate für {symbol}: {funding_rate_info}")
+        except Exception as e:
+            print(f"Ein Fehler ist aufgetreten: {e}")
+
+
+
+    def list_symbols_by_commission(self, commission_type='0'):
+        """
+        Listet alle Symbole und ihre Kommissionen basierend auf der Kommissionsrate auf.
+        """
+        if hasattr(self, 'df_fee') and not self.df_fee.empty:
+            # Stellen Sie sicher, dass die Kommissionswerte numerisch sind
+            self.df_fee['makerCommission'] = pd.to_numeric(self.df_fee['makerCommission'], errors='coerce')
+            self.df_fee['takerCommission'] = pd.to_numeric(self.df_fee['takerCommission'], errors='coerce')
+    
+            # Filtern des DataFrames basierend auf dem commission_type
+            if commission_type == '0':
+                filtered_df = self.df_fee[(self.df_fee['makerCommission'] == 0) & (self.df_fee['takerCommission'] == 0)]
+            elif commission_type == '<0':
+                filtered_df = self.df_fee[(self.df_fee['makerCommission'] < 0) | (self.df_fee['takerCommission'] < 0)]
+            elif commission_type == '>0':
+                filtered_df = self.df_fee[(self.df_fee['makerCommission'] > 0) | (self.df_fee['takerCommission'] > 0)]
+            else:
+                print("Ungültiger commission_type angegeben.")
+                return
+    
+            if not filtered_df.empty:
+                print(f"Symbole mit Kommission {commission_type}:")
+                # Zeigen Sie die Symbolnamen zusammen mit ihren Kommissionen an
+                for index, row in filtered_df.iterrows():
+                    print(f"Symbol: {row['symbol']}, Maker-Kommission: {row['makerCommission']}, Taker-Kommission: {row['takerCommission']}")
+            else:
+                print(f"Keine Symbole mit Kommission {commission_type} gefunden.")
+        else:
+            print("Keine Gebühreninformationen verfügbar.")
+
+    def get_funding_rate_history(self, symbol, limit=500):
+        """
+        Ruft die Historie der Funding Rates für ein spezifisches Futures-Symbol ab.
+        :param symbol: Das Futures-Symbol, für das die Funding Rate Historie abgerufen werden soll.
+        :param limit: Die maximale Anzahl an Einträgen, die abgerufen werden soll.
+        """
+        funding_rates = self.client.futures_funding_rate(symbol=symbol, limit=limit)
+        if funding_rates:
+            self.df_fundingRate = pd.DataFrame(funding_rates)
+            print("Funding Rate Historie erfolgreich abgerufen und im DataFrame gespeichert.")
+        else:
+            print("Keine Daten zur Funding Rate gefunden.")

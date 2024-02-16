@@ -31,6 +31,7 @@ from classes.export import Export
 
 
 import argparse
+import sys
 
 
 
@@ -69,9 +70,9 @@ def main():
     # Standardwerte für die Entwicklung
     if args.mode == 0:
         symbol = 'BTCUSDT'
-        symbol = 'MATICUSDT'
-        interval = '1m'
-        balken = 20
+        #symbol = 'MATICUSDT'
+        interval = '5m'
+        balken = 50
     else:
         symbol = args.symbol
         interval = args.interval
@@ -87,8 +88,14 @@ def main():
     
     # Daten abrufen und aufbereiten
     binance_client.initialize_data()
-    binance_client.get_data_binance(symbol, interval,  balken )  # korrigierte Reihenfolge der Parameter
-  
+    binance_client.get_data_binance(symbol, interval,  balken )  
+    
+    #binance_client.get_commission()     #gebühren abfragen  
+    #binance_client.show_commission('BNBUSDT') #anzeige der gebühren für alle symbole oder zu einem einzelnen
+    #binance_client.get_funding_rate_history('BNBUSDT')
+    #binance_client.list_symbols_by_commission('0')    # 0 keine gebühren <0   >0
+
+    #sys.exit()
     #technische INdikatoren berechnen für die abgerufenen Daten und im Panda Framework abspeichern    
     
     #die technischen indikatoren gehören in dieser reihenfolge abgearbeitet sonst kann es zu logik fehen kommen

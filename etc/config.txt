@@ -3,8 +3,9 @@
 
 
 #binance
-binance_api_key=MZuQDr9IvyCDTATAyKcSwm73q1jVJ30NrJ7Y9x2dvwrlH8Tpcx4WiCVeZHqXyPrs
-binance_secret_key=WxCm0o0rZ0H6T9NkEiEjEpQPH51HiSQDdyU3Bkhob0xRmK9wAPQDxPgx0eqOVFs2
+#https://www.binance.com/en/my/settings/api-management
+binance_api_key=wJVHPj0vHSqP8sDZyyCgNpdd6TGJ1QwnRcfqKq8KRPeVBXYnvRqTOZaBE8pNeYvt
+binance_secret_key=S9LhSmCgRPwcvScbturPDdZ2r1hxaab9QZCMmdelUXQOS0xr1m4b4ZT0sYDOY0zF
 
 #Pushbullet
 pushbullet_api=o.znzzfAIJa8bmFnqq3tN6dm826mdVxFEy
