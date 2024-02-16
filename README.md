@@ -99,6 +99,14 @@ git tag -a v1.0. -m "Mein Release 1.0.0"
 git push origin v1.0
 
 
+#########
+Aktuell
+git branch -m master 02-Basis
+git fetch origin
+(wird nicht benötigt  git branch -u origin/02-Basis 02-Basis)
+git remote set-head origin -a
+
+
 
 Git Repository
 https://github.com/michipriv/CoinChaos
