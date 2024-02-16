@@ -86,11 +86,11 @@ git pull
 
 Branch erstellen
 ein Branch wird für zwischenduch (intern) beim Entwickeln verwendet ununterstützend kanna auch parallel entwicklungen 
-git checkout -b branch-name
+git checkout -b 03-further
 git add .
-git commit -m "Commit-Nachricht"
-git push origin branch-name
-git push --set-upstream origin Basis
+git commit -m "new branch"
+git push origin 03-further
+git push --set-upstream origin 03-further
 
 
 Tag erstellen (das hier verwenden zum üben)
