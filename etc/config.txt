@@ -9,3 +9,9 @@ binance_secret_key=S9LhSmCgRPwcvScbturPDdZ2r1hxaab9QZCMmdelUXQOS0xr1m4b4ZT0sYDOY
 
 #Pushbullet
 pushbullet_api=o.znzzfAIJa8bmFnqq3tN6dm826mdVxFEy
+
+# Pfad zur SQLite-Datenbank
+db_path=db/coinchaos.db
+
+#Zeitzone
+time_zone=Europe/Vienna

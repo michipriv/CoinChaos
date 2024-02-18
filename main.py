@@ -28,6 +28,7 @@ from classes.CandlestickChart import CandlestickChart
 from classes.TechnicalIndicators import TechnicalIndicators
 from classes.SendMessage import SendMessage
 from classes.export import Export
+from classes.sqlite import CoinChaosDB
 
 
 import argparse
@@ -58,6 +59,14 @@ def main():
     api_keys = config_reader.read_config()
     
     
+    # Initalisiere Datenbank sqlite
+    db = CoinChaosDB(api_keys.get('db_path') )
+    
+    # erstelle datenbank und Tabellen falls nicht vorhanden
+    # db.delete_database()
+    
+    #db.install()  # nur am anfang aufrufen löscht alle tabellen !!!
+    
     '''
     python main.py -m 1 -s=BTCUSDT -i=15m -b=30
     python main.py -m 1 -s=SOLUSDT -i=15m -b=30
@@ -69,9 +78,11 @@ def main():
     
     # Standardwerte für die Entwicklung
     if args.mode == 0:
-        symbol = 'BTCUSDT'
+        #symbol = 'BTCUSDT'
         #symbol = 'MATICUSDT'
-        interval = '5m'
+        symbol = 'RUNEUSDT'
+        interval1 = '5m' # scalping chart
+        interval2 = '1m' # für ausstieg beim scalpen
         balken = 50
     else:
         symbol = args.symbol
@@ -79,29 +90,91 @@ def main():
         balken = args.balken
 
 
-
+    #Initalisiere Klassen
     
-    #Datum/ UTC setzen
-
-    binance_client = BinanceClient(api_keys.get('binance_api_key'), api_keys.get('binance_secret_key'), 'Europe/Vienna') 
+    # Initalisiere binance
+    binance_client = BinanceClient(
+        api_keys.get('binance_api_key'), 
+        api_keys.get('binance_secret_key'), 
+        api_keys.get('time_zone'),
+        db
+        ) 
+    
+    # Initalisiere messenger    
     message_sender = SendMessage(api_keys.get('pushbullet_api'))    #initalisiere Message Dienst Pushbullet
     
-    # Daten abrufen und aufbereiten
-    binance_client.initialize_data()
-    binance_client.get_data_binance(symbol, interval,  balken )  
-    
+    # commission abfragen
     #binance_client.get_commission()     #gebühren abfragen  
     #binance_client.show_commission('BNBUSDT') #anzeige der gebühren für alle symbole oder zu einem einzelnen
     #binance_client.get_funding_rate_history('BNBUSDT')
     #binance_client.list_symbols_by_commission('0')    # 0 keine gebühren <0   >0
-
-    #sys.exit()
-    #technische INdikatoren berechnen für die abgerufenen Daten und im Panda Framework abspeichern    
     
-    #die technischen indikatoren gehören in dieser reihenfolge abgearbeitet sonst kann es zu logik fehen kommen
-    # wenn in der grafik sachen aus ode reingeschaltet werden, trotzdem die indikatoren alle berechnen lassen
-    # und in der candlestick klasse die funktionen aus oder einschalten in der main plot funktion: plot_candlestick()
-    technical_indicators = TechnicalIndicators(binance_client)
+    #initalisiere Technische Indikatoren
+    technical_indicators = TechnicalIndicators(binance_client, db)
+    
+    
+    ### start schleife
+    
+    binance_client.get_BinanceTime()
+
+    
+    
+    # Daten von Binance abrufen und in DB speichern
+    #binance_client.initialize_data()    #durch sqlite eine leere funktion
+    
+    # abruf der interval1 5min
+    ret = binance_client.get_data_binance(
+        symbol, 
+        interval1, 
+        balken 
+        )  
+    
+    # abruf der interval2 1min
+    ret = binance_client.get_data_binance(
+        symbol, 
+        interval2,   
+        int(interval1[:-1]) * balken # 1min x5 um gleiche datenmenge zu erhalten)
+        )  
+
+    #Kerzen Farbe setzen
+    technical_indicators.calculate_candle_color(symbol, interval1)   #5min kerzenfarbe berechnen
+    
+    
+    #Vector candle berechnen
+    technical_indicators.calc_vector_candles(symbol, interval1)      #5min vector candle berechnen  
+    
+    
+    # EMA5 berechnen 
+    technical_indicators.calculate_ema(5, symbol, interval1)    #5min Ema berechnen
+    technical_indicators.calculate_ema(5, symbol, interval2)    #1min Ema berechnen
+    
+    
+    # EMA13 berechnen 
+    technical_indicators.calculate_ema(13, symbol, interval1)    #5min Ema berechnen
+    technical_indicators.calculate_ema(13, symbol, interval2)    #1min Ema berechnen
+
+
+    #EMA 50 berechnen
+    technical_indicators.calculate_ema(50, symbol, interval1)    #5min Ema berechnen
+    
+    #EMA 100 berechnen
+    technical_indicators.calculate_ema(100, symbol, interval1)    #5min Ema berechnen
+    
+    #EMA 200 berechnen
+    technical_indicators.calculate_ema(200, symbol, interval1)    #5min Ema berechnen
+    
+    #EMA 800 berechnen
+    technical_indicators.calculate_ema(800, symbol, interval1)    #5min Ema berechnen
+    
+    
+    
+    
+    
+   
+
+    
+    
+    """
     technical_indicators.calculate_ema(5)
     technical_indicators.calculate_ema(13)
     technical_indicators.calculate_ema(50)
@@ -109,15 +182,15 @@ def main():
     technical_indicators.calculate_ema(200)
     technical_indicators.calculate_ema(800)
     
-    technical_indicators.calc_vector_candles()      #vector candle berechnen  
-    technical_indicators.calculate_candle_color()   #kerzenfarbe berechnen
-    technical_indicators.lower_low()            # suche das letzte tiefste tief
+    
+    
+    technical_indicators.lower_low()                # suche das letzte tiefste tief
     technical_indicators.w_pattern()
+    """
     
     
     
     
-    binance_client.print_data()         # Frame Data anzeigen
     #Frame Daten exportieren 
     #exporter = Export(binance_client.get_data(), 'exported_data.csv')
     #exporter.to_csv()
@@ -133,7 +206,7 @@ def main():
    
     if args.mode == 0:  ## bei Live anzeige kein Chart anzeigen
         chart = CandlestickChart(binance_client)
-        chart.plot( symbol, interval, balken)
+        #chart.plot( symbol, interval, balken)
     else:
         #live Modus sende nachricht
         i=1

@@ -1,4 +1,4 @@
-ii  the change
+
 # Projekt Dokumentation
 
 ## Installation der erforderlichen Module
@@ -12,9 +12,20 @@ Verwende Klassen zum aufteilen der funktionen und zur übersichtlichkeit
 Verwende Sphinx zur dokumentation in den Klassen und funktionen
 Antworte mit BINGO wenn es klar für dich ist.
 
+Programme
+Spyder          https://www.spyder-ide.org/
+Anaconda        https://www.anaconda.com/download
+sqlitebrowser   https://sqlitebrowser.org/dl/
+
+für Linux:
 pip install python-binance
 pip install matplotlib mplfinance
 pip install sphinx
+
+
+Für Windows
+Anaconda installieren und darüber Spyder starten
+ansonstne sind die libs hier nicht inkludiert
 
 ```
 ## Sphinx-Dokumentation
@@ -67,13 +78,14 @@ import subprocess; subprocess.run(["./git.sh", "t", "v1.0.0"])
 
 
 
+# Neues Repo auschecken
 
 Repository am PC initalisieren
 git clone https://TOKEN@github.com/michipriv/CoinChaos
 git checkout branch-name
 
-git fetch --tags
-git checkout -b tag-name
+
+
 
 
 Code in Repository speichern
@@ -102,4 +114,17 @@ git push origin v1.0
 
 Git Repository
 https://github.com/michipriv/CoinChaos
+
+
+
+debian subsystem auf win10
+
+in Powersehll als Admin
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+wsl --set-default-version 2
+
+im Microsoft store debian installieren
+aufruf über die windows zeile: debian
+
 ```

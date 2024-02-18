@@ -7,39 +7,52 @@ from binance.client import Client
 from datetime import datetime, timedelta
 from pytz import timezone
 import pytz
+import time
 
 class BinanceClient:
     """
-    Eine Klasse zur Interaktion mit der Binance-API.
+     Eine Klasse zur Interaktion mit der Binance-API.
+    
+     Diese Klasse ermöglicht das Abrufen historischer Handelsdaten von der Binance-Plattform
+     und ihre Speicherung in einem Pandas DataFrame oder einer SQLite-Datenbank.
+    
+     :param api_key: Der API-Schlüssel für die Binance-API.
+     :type api_key: str
+     :param api_secret: Das API-Geheimnis für die Binance-API.
+     :type api_secret: str
+     :param time_zone: Die Zeitzone für die Zeitstempel der Daten.
+     :type time_zone: str
+     :param db_handler: Handler für die SQLite-Datenbank.
+     :type db_handler: CoinChaosDB
+    
+     :ivar client: Eine Instanz des Binance API-Clients.
+     :vartype client: binance.client.Client
+     :ivar data: Ein DataFrame zur Speicherung der abgerufenen Handelsdaten.
+     :vartype data: pandas.DataFrame
+     :ivar db_handler: Der Datenbankhandler.
+     :vartype db_handler: CoinChaosDB
+     """
 
-    Diese Klasse ermöglicht das Abrufen historischer Handelsdaten von der Binance-Plattform
-    und ihre Speicherung in einem Pandas DataFrame.
-
-    :param api_key: Der API-Schlüssel für die Binance-API.
-    :type api_key: str
-    :param api_secret: Das API-Geheimnis für die Binance-API.
-    :type api_secret: str
-
-    :ivar client: Eine Instanz des Binance API-Clients.
-    :vartype client: binance.client.Client
-    :ivar data: Ein DataFrame zur Speicherung der abgerufenen Handelsdaten.
-    :vartype data: pandas.DataFrame
-    """
-
-    def __init__(self, api_key, api_secret, time_zone='UTC'):
+    def __init__(self, api_key, api_secret, time_zone, db):
          
         """
-        Initialisiert die BinanceClient-Klasse mit API-Schlüsseln.
-
-        :param api_key: Der API-Schlüssel für die Binance-API.
-        :type api_key: str
-        :param api_secret: Das API-Geheimnis für die Binance-API.
-        :type api_secret: str
-        """
+         Initialisiert die BinanceClient-Klasse mit API-Schlüsseln und einem Datenbankhandler.
+        
+         :param api_key: Der API-Schlüssel für die Binance-API.
+         :type api_key: str
+         :param api_secret: Das API-Geheimnis für die Binance-API.
+         :type api_secret: str
+         :param db_handler: Handler für die SQLite-Datenbank.
+         :type db_handler: CoinChaosDB
+         :param time_zone: Die Zeitzone für die Zeitstempel der Daten.
+         :type time_zone: str
+         """
             
         self.client = Client(api_key, api_secret)
         self.data = pd.DataFrame()
         self.time_zone = timezone(time_zone)
+        self.db = db
+        
         
 
     def initialize_data(self):
@@ -79,7 +92,7 @@ class BinanceClient:
         '''
         binance time ... UnixTimestamp in milliseconds
         
-            time            open_price   high_price  low_price  close_price volume    vector_color lowest_low    symbol interval    ema_5         ema_13         ema_50        ema_100       ema_200       ema_800        Kerze    lower_low  lower_low_start lower_low_ende  w1 w_middle w2
+        pk    time            open_price   high_price  low_price  close_price volume    vector_color lowest_low    symbol interval    ema_5         ema_13         ema_50        ema_100       ema_200       ema_800        Kerze    lower_low  lower_low_start lower_low_ende  w1 w_middle w2
         0   1705814100000    41675.84    41675.84   41645.41     41656.10   96.21797  darkgrey     NaN  BTCUSDT      15m            41656.100000  41656.100000   41656.100000  41656.100000  41656.100000  41656.100000   Rot                 AA     
         1   1705815000000    41656.10    41656.10   41644.93     41649.97   71.57745  darkgrey     NaN  BTCUSDT      15m            41654.056667  41655.224286   41655.859608  41655.978614  41656.039005  41656.084694   Rot                 AA
         2   1705815900000    41649.97    41649.98   41628.46     41628.47   72.93337  darkgrey     NaN  BTCUSDT      15m            41645.527778  41651.402245   41654.785506  41655.433889  41655.764687  41656.015744   Rot
@@ -98,34 +111,34 @@ class BinanceClient:
         self.data = pd.DataFrame(columns=columns)
 
     
-
-
     def get_data_binance(self, symbol, interval, limit):
         
-        """       
-        .. py:method:: BinanceClient.get_data_binance(symbol, interval, days_ago)
-
-        Ruft Handelsdaten für ein bestimmtes Kryptowährungssymbol von der Binance API ab und speichert sie in einem DataFrame. Diese Methode verwendet die aktuelle Serverzeit von Binance, um sicherzustellen, dass die Zeitberechnung genau ist. Die abgerufenen Daten enthalten verschiedene Details zu jedem Handelsintervall, wie Öffnungs-, Höchst-, Tiefst- und Schlusspreise sowie das gehandelte Volumen.
-
-        :param str symbol: Das Handelssymbol für die Abfrage, beispielsweise 'BTCUSDT'.
-        :param str interval: Das Zeitintervall für die Daten. Die unterstützten Intervalle sind beispielsweise '1m' (eine Minute), '1h' (eine Stunde), '1d' (ein Tag). Standardmäßig ist das Intervall auf '1d' gesetzt.
-        :param int limit: Die Anzahl der Kerzen die abgerufen werden sollen. 
-
-        Die Methode beginnt mit der Abfrage der aktuellen Serverzeit von Binance und berechnet den Start- und Endzeitpunkt für die Datensammlung. Anschließend werden die historischen Kerzendaten ('klines') für das angegebene Symbol und Intervall von der Binance API abgerufen. Jede Kerze wird in ein Datumsformat (im UTC-Standard) umgewandelt und zusammen mit anderen relevanten Handelsdaten in den DataFrame eingefügt.
-
-        :return: Diese Methode gibt nichts zurück, sondern aktualisiert den internen DataFrame der Klasse mit den abgerufenen Handelsdaten.
-        :rtype: None
-
-        Beispiel::
-
-        # Erstellen einer Instanz der BinanceClient-Klasse
-        client = BinanceClient(api_key, api_secret)
-
-        # Abrufen von Handelsdaten für BTCUSDT für die letzten 10 Balken im 1h Format
-        client.get_data_binance('BTCUSDT', '1h', 10)
-
+        
+        # Prüfen, ob das Symbol und das Zeitintervall bereits in der Datenbank vorhanden sind
+        c = self.db.conn.cursor()
+        c.execute("SELECT COUNT(*) FROM coin_data WHERE coin = ? AND timeframe = ?", (symbol, interval))
+    
+        result = c.fetchone()
+        count = result[0]
+        
+        if count > 0:
+            print(f"{symbol}  {interval} wird aktualisiert.")
+            self.get_data_binance_last(symbol, interval)
+        else:
+            print(f"{symbol} {interval} erstemal gespeichert.")
+            self.get_data_binance_first(symbol, interval, limit)
+                
+            
+    
+    def get_data_binance_first(self, symbol, interval, limit):
         """
-
+        Ruft Handelsdaten für ein bestimmtes Kryptowährungssymbol von der Binance API ab und speichert sie in der Datenbanktabelle 'coin_data'.
+    
+        :param str symbol: Das Handelssymbol für die Abfrage, beispielsweise 'BTCUSDT'.
+        :param str interval: Das Zeitintervall für die Daten, z.B. '1m', '1h', '1d'.
+        :param int limit: Die Anzahl der abzurufenden Datenpunkte.
+        """
+    
         # Abrufen der aktuellen Serverzeit von Binance
         server_time = self.client.get_server_time()
         server_dt = datetime.fromtimestamp(server_time['serverTime'] / 1000, pytz.utc)
@@ -145,57 +158,126 @@ class BinanceClient:
         # Formatierung der Zeitstempel für die API-Anfrage
         start_str = start_time.strftime('%Y-%m-%dT%H:%M:%SZ')
         end_str = server_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
-
     
-        # Abrufen der historischen Kurse mit Limit
+        # Abrufen der historischen Kurse
         candles = self.client.get_historical_klines(symbol, interval, start_str, end_str, limit=limit)
-
-
-        for candle in candles:
-            
-            time = candle[0]
-            # Zeitzone konvertieren
-            dt = datetime.fromtimestamp(time / 1000, pytz.utc).astimezone(self.time_zone)
-            
-            # Formatieren des Zeitstempels im ISO 8601-Format
-            formatted_time = dt.strftime('%Y-%m-%dT%H:%M:%S')
-        
-            open_price = float(candle[1])
-            high_price = float(candle[2])
-            low_price = float(candle[3])
-            close_price = float(candle[4])
-            volume = float(candle[5])
     
-            # Verwende die append_data-Methode, um die Daten zum DataFrame hinzuzufügen
+        # Einfügen der Daten in die Datenbank
+        for candle in candles:
+            timeunix = candle[0]
+            timestd = datetime.fromtimestamp(timeunix / 1000).strftime('%Y-%m-%d %H:%M:%S')
+            open_price = candle[1]
+            high_price = candle[2]
+            low_price = candle[3]
+            close_price = candle[4]
+            volume = candle[5]
+    
+            self.db.conn.execute("""
+                INSERT INTO coin_data (coin, timeframe, timeunix, timestd, open_price, high_price, low_price, close_price, volume)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (symbol, interval, timeunix, timestd, open_price, high_price, low_price, close_price, volume))
+    
+        # Commit der Transaktion
+        self.db.conn.commit()
 
-            self.append_data(         
-               time=time,
-               symbol=symbol,
-               interval=interval,
-               open_price=open_price,
-               high_price=high_price,
-               low_price=low_price,
-               close_price=close_price,
-               volume=volume
-           )
-
-
-   
-
-    def append_data(self, **kwargs):
+    def get_last_entry(self, symbol, interval):
         """
-        Hängt Daten an ein vorhandenes Pandas DataFrame an.
+        Retrieves the last entry for the specified symbol and interval from the coin_data table.
 
-        :param kwargs: Keyword-Argumente für die Daten, die hinzugefügt werden sollen.
-                       Beinhaltet: 'time', 'open_price', 'high_price', 'low_price', 
-                       'close_price' und 'volume'.
+        :param symbol: The trading symbol (e.g., BTCUSDT).
+        :param interval: The time interval (e.g., 1m, 5m, 1h).
+        :return: The last entry for the specified symbol and interval, or None if no entry is found.
         """
+        query = """
+            SELECT * FROM coin_data
+            WHERE coin = ? AND timeframe = ?
+            ORDER BY timeunix DESC
+            LIMIT 1
+        """
+        c = self.db.conn.cursor()
+        c.execute(query, (symbol, interval))
+        return c.fetchone()
         
-        new_row = kwargs
-        new_row_df = pd.DataFrame([new_row])
-        self.data = pd.concat([self.data, new_row_df], ignore_index=True)
+
+
+
+    def get_data_binance_last(self, symbol, interval):
+        """
+        Retrieves and updates data from Binance for a specific symbol and interval,
+        considering the specified time zone.
+        """
+        # Get the last entry for the symbol and interval from the table
+        last_entry = self.get_last_entry(symbol, interval)
+        if last_entry is None:
+            print(f"Keine Daten für: {symbol} {interval}")
+            return
+    
+        # Extract the relevant information from the last entry
+        last_timeunix = last_entry[3]  # The Unix timestampms of the last entry
+        last_timestd = last_entry[4]  # The standard time of the last entry
+    
+        # Display the last entry time for verification
+        print(f"Letzter eintrag: {last_timestd}")
+    
+        # Get the current server time from Binance
+        server_time = self.client.get_server_time()
+        server_time_utc = datetime.fromtimestamp(server_time['serverTime'] / 1000, tz=pytz.utc)
+        # Umrechnung der Serverzeit in Millisekunden für den Vergleich
+        current_time_unix = server_time['serverTime']
+
+        # Berechnung der minimalen Zeitdifferenz basierend auf dem Intervall
+        if interval.endswith("m"):
+            time_diff = int(interval[:-1]) * 60 * 1000  # Konvertierung von Minuten in Millisekunden
+        elif interval.endswith("h"):
+            time_diff = int(interval[:-1]) * 60 * 60 * 1000  # Konvertierung von Stunden in Millisekunden
+        elif interval.endswith("d"):
+            time_diff = int(interval[:-1]) * 24 * 60 * 60 * 1000  # Konvertierung von Tagen in Millisekunden
+        else:
+            time_diff = 1 * 60 * 1000  # Standardwert auf 1 Minute setzen, falls das Intervall nicht erkannt wird
+
+        # Überprüfen, ob die erforderliche Zeit seit dem letzten Eintrag vergangen ist
+        if current_time_unix - last_timeunix < time_diff:
+            print("Kein neue Daten vorhanden.")
+            return 0 # Frühe Rückkehr, wenn das erforderliche Intervall noch nicht vergangen ist
+
+    
+        # Convert the server time to the specified time zone
+        server_time_converted = server_time_utc.astimezone(self.time_zone)
+        #print(f"Current Binance Zeit : {server_time_converted.strftime('%Y-%m-%d %H:%M:%S')}")
+    
+        # Calculate the start_str for new data retrieval
+        start_str = datetime.utcfromtimestamp((last_timeunix + 1) / 1000).strftime('%Y-%m-%d %H:%M:%S')
         
- 
+      
+    
+  
+        # Wenn das Skript hier fortgesetzt wird, bedeutet das, dass neue Daten verfügbar sind
+        candles = self.client.get_historical_klines(symbol, interval, start_str, "now")
+        
+        if candles:
+            print(f"Retrieved {len(candles)} new candles from Binance.")
+        else:
+            print("No new data available to retrieve.")
+            
+        # Track the number of added records
+        added_records = 0
+    
+        # Insert new data into the database
+        for candle in candles:
+            self.db.conn.execute("""
+                INSERT INTO coin_data (coin, timeframe, timeunix, timestd, open_price, high_price, low_price, close_price, volume)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (symbol, interval, candle[0], datetime.fromtimestamp(candle[0] / 1000, tz=self.time_zone).strftime('%Y-%m-%d %H:%M:%S'), candle[1], candle[2], candle[3], candle[4], candle[5]))
+            added_records += 1
+    
+        # Commit the transaction
+        self.db.conn.commit()
+
+        #print(f"{added_records} records were added.")
+        return added_records
+    
+     
+    #dataframe löschen
     def print_data(self):
         """
         Zeigt alle Daten des internen DataFrame an.
@@ -218,7 +300,9 @@ class BinanceClient:
             #selektierte daten ausgeben
             #elected_columns = self.data.loc[:, ['open_price', 'high_price', 'ema_50']]
             #print(selected_columns)
-   
+    
+    
+    #dataframe löschen   
     def add_column(self, column_name, values):
         """
         Fügt eine neue Spalte zum DataFrame hinzu.
@@ -232,8 +316,8 @@ class BinanceClient:
 
         self.data[column_name] = values
         
-
-
+    
+    #dataframe löschen
     def get_data(self):
         """
         Gibt den aktuellen DataFrame mit Handelsdaten zurück.
@@ -243,6 +327,9 @@ class BinanceClient:
         """
         
         return self.data
+    
+  
+    # alle commission und fundingrate funktionen überprüfen
 
     def get_commission(self):
         """
@@ -351,3 +438,20 @@ class BinanceClient:
             print("Funding Rate Historie erfolgreich abgerufen und im DataFrame gespeichert.")
         else:
             print("Keine Daten zur Funding Rate gefunden.")
+
+    
+    def get_BinanceTime(self):
+        """
+        Ruft die aktuelle Serverzeit von Binance ab und zeigt sie in der durch self.time_zone definierten Zeitzone an.
+        """
+        # Abrufen der aktuellen Serverzeit von Binance
+        server_time = self.client.get_server_time()
+    
+        # Umwandlung des Zeitstempels in Millisekunden in ein datetime-Objekt
+        dt_utc = datetime.utcfromtimestamp(server_time['serverTime'] / 1000).replace(tzinfo=pytz.utc)
+    
+        # Konvertieren der UTC-Zeit in die in der Klasse definierte Zeitzone
+        dt_converted = dt_utc.astimezone(self.time_zone)
+    
+        # Ausgabe der Zeit in der konvertierten Zeitzone
+        print(f"Current Binance Time in {self.time_zone}: {dt_converted.strftime('%Y-%m-%d %H:%M:%S')}")
